@@ -90,6 +90,8 @@ import dao.DepartementDAO;
 import dao.EmployeDAO;
 import model.Departement;
 import model.Employe;
+import org.hibernate.Session;
+import util.HibernateUtil;
 
 import java.util.List;
 
@@ -149,4 +151,30 @@ public class EmployeService {
     public Employe authenticate(String email, String password) {
         return employeDAO.authenticate(email, password);
     }
+
+    public List<Employe> getEmployesSansChefActuel() {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+
+        // Employés qui ne sont pas actuellement chefs dans un autre département
+        String hql = "FROM Employe e WHERE NOT EXISTS (" +
+                "SELECT 1 FROM Chef c WHERE c.employe.id = e.id AND c.dateFin IS NULL" +
+                ")";
+
+        List<Employe> result = session.createQuery(hql, Employe.class).getResultList();
+        session.close();
+        return result;
+    }
+    public List<Employe> getAllEmployesAvecHistoriqueChef() {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        try {
+            return session.createQuery(
+                    "SELECT DISTINCT e FROM Employe e LEFT JOIN FETCH e.historiqueChef", Employe.class
+            ).getResultList();
+        } finally {
+            session.close();
+        }
+    }
+
+
+
 }

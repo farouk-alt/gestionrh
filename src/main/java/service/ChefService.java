@@ -230,7 +230,17 @@ public class ChefService {
         try {
             tx = session.beginTransaction();
 
-            // 1. Clôturer le chef actuel s’il existe
+            // Vérification : est-ce que cet employé est déjà chef ailleurs (actif) ?
+            Chef autreChefActif = session.createQuery(
+                            "FROM Chef WHERE employe.id = :empId AND dateFin IS NULL", Chef.class)
+                    .setParameter("empId", employeId)
+                    .uniqueResult();
+
+            if (autreChefActif != null) {
+                throw new IllegalStateException("Cet employé est déjà chef d’un autre département.");
+            }
+
+            // 1. Clôturer le chef actuel s’il existe pour ce département
             Chef chefActuel = session.createQuery(
                             "FROM Chef WHERE departement.id = :depId AND dateFin IS NULL", Chef.class)
                     .setParameter("depId", departementId)
@@ -252,15 +262,17 @@ public class ChefService {
             nouveauChef.setDateFin(null);
 
             session.persist(nouveauChef);
-
             tx.commit();
+
         } catch (Exception e) {
             if (tx != null) tx.rollback();
             e.printStackTrace();
+            throw new RuntimeException("Erreur lors de la nomination du chef : " + e.getMessage());
         } finally {
             session.close();
         }
     }
+
 
     public void retirerChef(Long employeId) {
         Session session = HibernateUtil.getSessionFactory().openSession();
@@ -326,4 +338,19 @@ public class ChefService {
     public Chef findByDepartementId(Long departementId) {
         return getChefActuel(departementId);
     }
+
+    public boolean estDejaChefActif(Employe employe) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        try {
+            String hql = "SELECT COUNT(c) FROM Chef c WHERE c.employe = :employe AND c.dateFin IS NULL";
+            Long count = session.createQuery(hql, Long.class)
+                    .setParameter("employe", employe)
+                    .uniqueResult();
+            return count != null && count > 0;
+        } finally {
+            session.close();
+        }
+    }
+
+
 }

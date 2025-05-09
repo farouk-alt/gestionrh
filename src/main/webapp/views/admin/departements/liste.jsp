@@ -92,7 +92,7 @@
                                                     <a href="${pageContext.request.contextPath}/admin/departements/supprimer/${dep.id}" class="btn btn-outline-danger" onclick="return confirm('Supprimer ce département ?')">
                                                         <i class="bi bi-trash"></i>
                                                     </a>
-                                                    <a href="${pageContext.request.contextPath}/admin/departements/historique/${departement.id}" class="btn btn-info">
+                                                    <a href="${pageContext.request.contextPath}/admin/departements/historique/${dep.id}" class="btn btn-info">
                                                         🕓 Voir historique des chefs
                                                     </a>
 

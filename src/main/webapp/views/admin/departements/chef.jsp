@@ -65,13 +65,18 @@
 
                             <form action="${pageContext.request.contextPath}/admin/departements/chef/${departement.id}" method="post" class="needs-validation" novalidate>
                                 <div class="mb-3">
-                                    <label for="employeId" class="form-label">Nommer un nouveau chef <span class="text-danger">*</span></label>
+                                    <label for="employeId" class="form-label">Nommer un nouveau chef</label>
                                     <select class="form-select" id="employeId" name="employeId" required>
                                         <option value="">Sélectionner un employé</option>
+
                                         <c:forEach var="employe" items="${employes}">
-                                            <option value="${employe.id}">${employe.nomComplet} (${employe.email})</option>
+                                            <option value="${employe.id}" <c:if test="${employe.estChefActuel}">disabled</c:if>>
+                                                    ${employe.nom} <c:if test="${employe.estChefActuel}">(déjà chef)</c:if>
+                                            </option>
                                         </c:forEach>
+
                                     </select>
+
                                     <div class="invalid-feedback">
                                         Veuillez sélectionner un employé.
                                     </div>
