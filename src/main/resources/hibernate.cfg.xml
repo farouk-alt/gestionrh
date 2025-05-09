@@ -1,0 +1,25 @@
+<hibernate-configuration>
+    <session-factory>
+
+        <!-- Connexion à la base de données -->
+        <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/gestion_rh</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="hibernate.connection.password"></property>
+
+        <!-- Dialecte MySQL -->
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQL8Dialect</property>
+
+        <!-- Options supplémentaires -->
+        <property name="hibernate.hbm2ddl.auto">update</property>
+        <property name="hibernate.show_sql">true</property>
+
+        <!-- Ajoute ici les entités -->
+        <mapping class="model.Employe"/>
+        <mapping class="model.Departement"/>
+        <mapping class="model.DemandeConge"/>
+        <mapping class="model.Chef"/>
+
+
+    </session-factory>
+</hibernate-configuration>
