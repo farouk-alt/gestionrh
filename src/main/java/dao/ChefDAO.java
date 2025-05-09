@@ -288,5 +288,19 @@ public class ChefDAO {
                     .list();
         }
     }
+    public boolean isChefActuel(Long employeId) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        try {
+            Long count = session.createQuery(
+                            "SELECT COUNT(c) FROM Chef c WHERE c.employe.id = :empId AND c.dateFin IS NULL", Long.class)
+                    .setParameter("empId", employeId)
+                    .uniqueResult();
+
+            return count != null && count > 0;
+        } finally {
+            session.close();
+        }
+    }
+
 }
 

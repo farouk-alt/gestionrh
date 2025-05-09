@@ -79,7 +79,9 @@ public class GestionDepartementServlet extends HttpServlet {
             Long id = Long.parseLong(pathInfo.substring(6));
             Departement departement = departementService.getDepartementById(id);
             if (departement != null) {
-                List<Employe> employes = employeService.getAllEmployesAvecHistoriqueChef(); // ✅ à utiliser ici
+//                List<Employe> employes = employeService.getAllEmployesAvecHistoriqueChef(); // ✅ à utiliser ici
+                List<Employe> employes = employeService.getEmployesByDepartementAvecStatutChef(id);
+
                 request.setAttribute("departement", departement);
                 request.setAttribute("employes", employes);
                 request.getRequestDispatcher("/views/admin/departements/chef.jsp").forward(request, response);

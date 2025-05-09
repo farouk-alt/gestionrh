@@ -230,7 +230,7 @@ public class ChefService {
         try {
             tx = session.beginTransaction();
 
-            // Vérification : est-ce que cet employé est déjà chef ailleurs (actif) ?
+            // 🔒 Vérification : est-ce que cet employé est déjà chef ailleurs (actif) ?
             Chef autreChefActif = session.createQuery(
                             "FROM Chef WHERE employe.id = :empId AND dateFin IS NULL", Chef.class)
                     .setParameter("empId", employeId)
@@ -240,7 +240,14 @@ public class ChefService {
                 throw new IllegalStateException("Cet employé est déjà chef d’un autre département.");
             }
 
-            // 1. Clôturer le chef actuel s’il existe pour ce département
+            // 🔎 Vérification : est-ce que l'employé appartient bien au département ?
+            Employe employe = session.get(Employe.class, employeId);
+            if (employe == null || employe.getDepartement() == null ||
+                    !employe.getDepartement().getId().equals(departementId)) {
+                throw new IllegalArgumentException("L'employé ne fait pas partie de ce département.");
+            }
+
+            // ✅ Clôturer le chef actuel s’il existe pour ce département
             Chef chefActuel = session.createQuery(
                             "FROM Chef WHERE departement.id = :depId AND dateFin IS NULL", Chef.class)
                     .setParameter("depId", departementId)
@@ -251,8 +258,7 @@ public class ChefService {
                 session.update(chefActuel);
             }
 
-            // 2. Nommer un nouveau chef
-            Employe employe = session.get(Employe.class, employeId);
+            // ✅ Nommer un nouveau chef
             Departement departement = session.get(Departement.class, departementId);
 
             Chef nouveauChef = new Chef();
@@ -272,6 +278,7 @@ public class ChefService {
             session.close();
         }
     }
+
 
 
     public void retirerChef(Long employeId) {

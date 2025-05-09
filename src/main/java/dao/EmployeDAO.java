@@ -233,4 +233,16 @@ public class EmployeDAO {
             return null;
         }
     }
+    public List<Employe> findByDepartementId(Long departementId) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        try {
+            return session.createQuery(
+                            "FROM Employe WHERE departement.id = :depId", Employe.class)
+                    .setParameter("depId", departementId)
+                    .list();
+        } finally {
+            session.close();
+        }
+    }
+
 }

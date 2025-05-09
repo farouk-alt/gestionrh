@@ -289,12 +289,17 @@ public class Employe implements Serializable {
         }
         return null;
     }
-
-
     @Transient
+    private boolean estChefActuel;
+
     public boolean isEstChefActuel() {
-        return getChefActuel() != null;
+        return estChefActuel;
     }
+
+    public void setEstChefActuel(boolean estChefActuel) {
+        this.estChefActuel = estChefActuel;
+    }
+
 
     @Transient
     public String getRole() {

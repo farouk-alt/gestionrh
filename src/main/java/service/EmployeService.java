@@ -86,11 +86,13 @@
 
 package service;
 
+import dao.ChefDAO;
 import dao.DepartementDAO;
 import dao.EmployeDAO;
 import model.Departement;
 import model.Employe;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import util.HibernateUtil;
 
 import java.util.List;
@@ -99,6 +101,7 @@ public class EmployeService {
 
     private final EmployeDAO employeDAO = new EmployeDAO();
     private final DepartementDAO departementDAO = new DepartementDAO();
+    private final ChefDAO chefDAO = new ChefDAO();
 
     public void saveEmploye(Employe employe) {
         employeDAO.saveEmploye(employe);
@@ -174,6 +177,17 @@ public class EmployeService {
             session.close();
         }
     }
+    public List<Employe> getEmployesByDepartementAvecStatutChef(Long departementId) {
+        List<Employe> employes = employeDAO.findByDepartementId(departementId);
+
+        for (Employe e : employes) {
+            boolean estChefActuel = chefDAO.isChefActuel(e.getId());
+            e.setEstChefActuel(estChefActuel);
+        }
+
+        return employes;
+    }
+
 
 
 
