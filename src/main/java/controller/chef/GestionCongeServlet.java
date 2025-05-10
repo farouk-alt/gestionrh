@@ -44,17 +44,27 @@ public class GestionCongeServlet extends HttpServlet {
 
         if (pathInfo == null || pathInfo.equals("/")) {
             Long departementId = chef.getDepartement().getId();
-            List<DemandeConge> demandes = demandeCongeService.getDemandesParEmploye(employeId);
+            List<DemandeConge> demandes = demandeCongeService.getDemandesEnAttenteParDepartement(departementId);
             request.setAttribute("demandes", demandes);
             request.getRequestDispatcher("/views/chef/conges/liste.jsp").forward(request, response);
 
-        } else if (pathInfo.startsWith("/traiter/")) {
+        }else if (pathInfo.startsWith("/traiter/")) {
             try {
                 Long demandeId = Long.parseLong(pathInfo.substring(9));
                 DemandeConge demande = demandeCongeService.getDemandeById(demandeId);
 
                 if (demande != null && demande.getEmploye().getDepartement().getId().equals(chef.getDepartement().getId())) {
                     request.setAttribute("demande", demande);
+
+                    // ✅ Calculer le taux d’acceptation (pour la progress bar)
+                    Long depId = chef.getDepartement().getId();
+                    int totalDemandes = demandeCongeService.countAllByDepartement(depId);
+                    int dejaAcceptees = demandeCongeService.countByEtatAndDepartement("ACCEPTE", depId);
+                    double taux = (totalDemandes > 0) ? (dejaAcceptees * 100.0 / totalDemandes) : 0.0;
+
+                    request.setAttribute("progressionAcceptation", taux);
+
+                    // ✅ Envoyer à la page JSP
                     request.getRequestDispatcher("/views/chef/conges/traiter.jsp").forward(request, response);
                 } else {
                     response.sendRedirect(request.getContextPath() + "/chef/conges");
@@ -62,10 +72,18 @@ public class GestionCongeServlet extends HttpServlet {
             } catch (NumberFormatException e) {
                 response.sendRedirect(request.getContextPath() + "/chef/conges");
             }
+        }
+        else if (pathInfo.startsWith("/historique")) {
+            Long departementId = chef.getDepartement().getId();
+            List<DemandeConge> historiques = demandeCongeService.getDemandesTraiteesParDepartement(departementId);
+            request.setAttribute("demandesTraitees", historiques);
+
+            request.getRequestDispatcher("/views/chef/conges/historique.jsp").forward(request, response);
         } else {
             response.sendRedirect(request.getContextPath() + "/chef/conges");
         }
     }
+
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -97,9 +115,24 @@ public class GestionCongeServlet extends HttpServlet {
                     String action = request.getParameter("action");
 
                     if ("approuver".equals(action)) {
-                        demandeCongeService.approuverDemandeConge(demandeId);
-                    } else if ("refuser".equals(action)) {
-                        demandeCongeService.refuserDemandeConge(demandeId);
+                        Long depId = chef.getDepartement().getId();
+                        int totalDemandes = demandeCongeService.countAllByDepartement(depId);
+                        int dejaAcceptees = demandeCongeService.countByEtatAndDepartement("ACCEPTE", depId);
+
+                        // Vérification du seuil 50%
+                        if (totalDemandes > 0 && ((double) dejaAcceptees / totalDemandes) >= 0.5) {
+                            request.setAttribute("erreur", "⚠️ Vous avez atteint la limite de 50% de demandes acceptées pour ce département.");
+                            request.setAttribute("demande", demande);
+                            request.getRequestDispatcher("/views/chef/conges/traiter.jsp").forward(request, response);
+                            return;
+                        }
+
+                        demandeCongeService.approuverDemandeConge(demandeId, chef.getEmploye());
+
+                    }
+                    else if ("refuser".equals(action)) {
+                        demandeCongeService.refuserDemandeConge(demandeId, chef.getEmploye());
+
                     }
                 }
 

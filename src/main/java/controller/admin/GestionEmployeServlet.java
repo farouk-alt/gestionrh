@@ -318,7 +318,7 @@ public class GestionEmployeServlet extends HttpServlet {
         String pathInfo = request.getPathInfo();
 
         if (pathInfo == null || pathInfo.equals("/")) {
-            List<Employe> employes = employeService.getAllEmployes();
+            List<Employe> employes = employeService.getAllEmployesAvecStatutChef();
             request.setAttribute("employes", employes);
             request.getRequestDispatcher("/views/admin/employes/liste.jsp").forward(request, response);
         } else if (pathInfo.equals("/ajouter")) {

@@ -167,26 +167,56 @@ public class EmployeService {
         session.close();
         return result;
     }
-    public List<Employe> getAllEmployesAvecHistoriqueChef() {
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        try {
+    public Employe getEmployeByIdWithChefHistory(Long id) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery(
-                    "SELECT DISTINCT e FROM Employe e LEFT JOIN FETCH e.historiqueChef", Employe.class
-            ).getResultList();
+                            "SELECT e FROM Employe e LEFT JOIN FETCH e.historiqueChef WHERE e.id = :id", Employe.class)
+                    .setParameter("id", id)
+                    .uniqueResult();
+        }
+    }
+
+    public List<Employe> getEmployesByDepartementAvecStatutChef(Long departementId) {
+        List<Employe> employes = employeDAO.findByDepartementId(departementId);
+        for (Employe e : employes) {
+            e.setEstChefActuel(chefDAO.isChefActuel(e.getId()));
+        }
+        return employes;
+    }
+
+    public List<Employe> getAllEmployesAvecStatutChef() {
+        List<Employe> employes = employeDAO.getAllEmployes();
+        for (Employe e : employes) {
+            e.setEstChefActuel(chefDAO.isChefActuel(e.getId()));
+        }
+        return employes;
+    }
+    public Employe getEmployeByIdWithHistorique(Long id) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery(
+                            "SELECT e FROM Employe e LEFT JOIN FETCH e.historiqueChef WHERE e.id = :id", Employe.class)
+                    .setParameter("id", id)
+                    .uniqueResult();
+        }
+    }
+    public Employe getEmployeByIdWithHistoriqueChef(Long id) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Employe employe = null;
+
+        try {
+            employe = session.createQuery(
+                            "SELECT e FROM Employe e LEFT JOIN FETCH e.historiqueChef WHERE e.id = :id", Employe.class)
+                    .setParameter("id", id)
+                    .uniqueResult();
         } finally {
             session.close();
         }
-    }
-    public List<Employe> getEmployesByDepartementAvecStatutChef(Long departementId) {
-        List<Employe> employes = employeDAO.findByDepartementId(departementId);
 
-        for (Employe e : employes) {
-            boolean estChefActuel = chefDAO.isChefActuel(e.getId());
-            e.setEstChefActuel(estChefActuel);
-        }
-
-        return employes;
+        return employe;
     }
+
+
+
 
 
 

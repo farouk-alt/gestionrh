@@ -30,21 +30,45 @@ public class RechercheCongeServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String nomEmploye = request.getParameter("nomEmploye");
-        String nomDepartement = request.getParameter("nomDepartement");
+        String nom = request.getParameter("nomEmploye");
+        String prenom = request.getParameter("prenomEmploye");
+        String departement = request.getParameter("nomDepartement");
         String dateStr = request.getParameter("dateMiseAJour");
-        Date dateMiseAJour = null;
 
+// ✅ Trimmer les champs pour éviter les espaces vides
+        if (nom != null) nom = nom.trim();
+        if (prenom != null) prenom = prenom.trim();
+        if (departement != null) departement = departement.trim();
+
+
+        Date dateMaj = null;
         try {
             if (dateStr != null && !dateStr.isEmpty()) {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                dateMiseAJour = sdf.parse(dateStr);
+                dateMaj = new SimpleDateFormat("yyyy-MM-dd").parse(dateStr);
             }
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            request.setAttribute("erreur", "Format de date invalide.");
+            request.getRequestDispatcher("/views/admin/conges/recherche.jsp").forward(request, response);
+            return;
         }
 
-        List<DemandeConge> resultats = demandeCongeService.rechercherParCriteres(nomEmploye, nomDepartement, dateStr, dateMiseAJour);
-       request.setAttribute("resultats", resultats);
+        // ✅ VALIDATION DES CHAMPS
+        if (nom == null || nom.isEmpty() ||
+                prenom == null || prenom.isEmpty() ||
+                departement == null || departement.isEmpty() ||
+                dateMaj == null) {
+
+            request.setAttribute("erreur", "Veuillez remplir tous les champs requis.");
+            request.getRequestDispatcher("/views/admin/conges/recherche.jsp").forward(request, response);
+            return;
+        }
+
+        // ✅ Appel au service si tout est OK
+        List<DemandeConge> resultats = demandeCongeService.rechercherParCriteres(nom, prenom, departement, dateMaj);
+        request.setAttribute("resultats", resultats);
+        request.getSession().setAttribute("resultats", resultats); // 📌 ICI
         request.getRequestDispatcher("/views/admin/conges/recherche.jsp").forward(request, response);
     }
+
+
 }

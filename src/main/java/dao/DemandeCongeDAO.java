@@ -193,7 +193,7 @@ public class DemandeCongeDAO {
     public List<DemandeConge> getEnAttenteByDepartement(Long departementId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery(
-                            "from DemandeConge where employe.departement.id = :did and etat = 'EN_ATTENTE'",
+                            "from DemandeConge where employe.departement.id = :did and etat = 'EN_ATTENTE' order by dateMiseAjour asc",
                             DemandeConge.class)
                     .setParameter("did", departementId)
                     .list();
@@ -247,4 +247,50 @@ public class DemandeCongeDAO {
             return Collections.emptyList();
         }
     }
+    public DemandeConge findByCritere(Date dateMaj, String nomEmp, String prenomEmp, String nomDepartement) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        try {
+            return session.createQuery(
+                            "SELECT d FROM DemandeConge d " +
+                                    "WHERE DATE(d.dateMiseAjour) = :dateMaj " +
+                                    "AND LOWER(d.employe.nom) = :nomEmp " +
+                                    "AND LOWER(d.employe.prenom) = :prenomEmp " +
+                                    "AND LOWER(d.employe.departement.nom) = :nomDepartement", DemandeConge.class)
+                    .setParameter("dateMaj", dateMaj)
+                    .setParameter("nomEmp", nomEmp.toLowerCase())
+                    .setParameter("prenomEmp", prenomEmp.toLowerCase())
+                    .setParameter("nomDepartement", nomDepartement.toLowerCase())
+                    .uniqueResult();
+        } finally {
+            session.close();
+        }
+    }
+    public int countAllByDepartement(Long departementId) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        try {
+            Long count = session.createQuery(
+                            "SELECT COUNT(d) FROM DemandeConge d WHERE d.employe.departement.id = :depId", Long.class)
+                    .setParameter("depId", departementId)
+                    .uniqueResult();
+            return count != null ? count.intValue() : 0;
+        } finally {
+            session.close();
+        }
+    }
+
+    public int countByEtatAndDepartement(String etat, Long departementId) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        try {
+            Long count = session.createQuery(
+                            "SELECT COUNT(d) FROM DemandeConge d WHERE d.etat = :etat AND d.employe.departement.id = :depId", Long.class)
+                    .setParameter("etat", model.DemandeConge.EtatDemande.valueOf(etat))
+                    .setParameter("depId", departementId)
+                    .uniqueResult();
+            return count != null ? count.intValue() : 0;
+        } finally {
+            session.close();
+        }
+    }
+
+
 }

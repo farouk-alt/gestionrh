@@ -37,11 +37,15 @@ public class DemandeCongeServlet extends HttpServlet {
         }
 
         String pathInfo = request.getPathInfo();
+        System.out.println(">> URI = " + request.getRequestURI());
+        System.out.println(">> pathInfo = " + request.getPathInfo());
+
+
 
         if (pathInfo == null || pathInfo.equals("/")) {
             List<DemandeConge> demandes = demandeCongeService.getDemandesParEmploye(employeId);
             request.setAttribute("demandes", demandes);
-            request.getRequestDispatcher("/views/employe/conges/liste.jsp").forward(request, response);
+            request.getRequestDispatcher("/views/employe/conges/conges.jsp").forward(request, response);
 
         } else if (pathInfo.equals("/demander")) {
             Employe employe = employeService.getEmployeById(employeId);
@@ -72,6 +76,7 @@ public class DemandeCongeServlet extends HttpServlet {
             throws ServletException, IOException {
 
         HttpSession session = request.getSession();
+
         Long employeId = (Long) session.getAttribute("employeId");
 
         if (employeId == null) {
@@ -80,6 +85,8 @@ public class DemandeCongeServlet extends HttpServlet {
         }
 
         String pathInfo = request.getPathInfo();
+
+
 
         if (pathInfo != null && pathInfo.equals("/demander")) {
             String dateDebutStr = request.getParameter("dateDebut");
@@ -104,6 +111,7 @@ public class DemandeCongeServlet extends HttpServlet {
                     request.getRequestDispatcher("/views/employe/conges/formulaire.jsp").forward(request, response);
                     return;
                 }
+
 
                 boolean success = demandeCongeService.creerDemandeConge(employeId, dateDebut, dateFin, motif);
 

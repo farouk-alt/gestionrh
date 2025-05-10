@@ -24,7 +24,7 @@ public class InitHibernateServlet extends HttpServlet {
         try {
             // Vérifier s’il existe déjà un admin
             Employe existing = session.createQuery("FROM Employe WHERE email = :email", Employe.class)
-                    .setParameter("email", "karti@gmail.com")
+                    .setParameter("email", "admin@gmail.com")
                     .uniqueResult();
 
             if (existing != null) {
@@ -33,7 +33,7 @@ public class InitHibernateServlet extends HttpServlet {
                 Employe admin = new Employe();
                 admin.setNom("Admin");
                 admin.setPrenom("Super");
-                admin.setEmail("karti@gmail.com");
+                admin.setEmail("admin@gmail.com");
                 admin.setNomUtilisateur("admin");
                 admin.setMotDePasse("1234"); // 🔐 À chiffrer dans une vraie appli
                 admin.setDateCreation(new Date());

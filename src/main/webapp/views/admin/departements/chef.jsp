@@ -70,11 +70,12 @@
                                         <option value="">Sélectionner un employé</option>
 
                                         <c:forEach var="employe" items="${employes}">
-                                            <option value="${employe.id}" <c:if test="${employe.estChefActuel}">disabled</c:if>>
-                                                    ${employe.nom} <c:if test="${employe.estChefActuel}">(déjà chef)</c:if>
-                                            </option>
+                                            <c:if test="${employe.role ne 'ADMIN'}">
+                                                <option value="${employe.id}" <c:if test="${employe.estChefActuel}">disabled</c:if>>
+                                                        ${employe.nom} <c:if test="${employe.estChefActuel}">(déjà chef)</c:if>
+                                                </option>
+                                            </c:if>
                                         </c:forEach>
-
                                     </select>
 
                                     <div class="invalid-feedback">

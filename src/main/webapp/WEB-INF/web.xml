@@ -98,6 +98,10 @@
         <servlet-name>AdminProfilServlet</servlet-name>
         <servlet-class>controller.admin.AdminProfilServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ChefProfilServlet</servlet-name>
+        <servlet-class>controller.chef.ChefProfilServlet</servlet-class>
+    </servlet>
 
     <!-- Servlet Mappings -->
     <servlet-mapping>
@@ -147,5 +151,9 @@
     <servlet-mapping>
         <servlet-name>AdminProfilServlet</servlet-name>
         <url-pattern>/admin/profil</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ChefProfilServlet</servlet-name>
+        <url-pattern>/chef/profil</url-pattern>
     </servlet-mapping>
 </web-app>

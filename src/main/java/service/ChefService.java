@@ -223,6 +223,62 @@ public class ChefService {
     private final EmployeDAO employeDAO = new EmployeDAO();
     private final DepartementDAO departementDAO = new DepartementDAO();
 
+//    public void nommerChef(Long employeId, Long departementId) {
+//        Session session = HibernateUtil.getSessionFactory().openSession();
+//        Transaction tx = null;
+//
+//        try {
+//            tx = session.beginTransaction();
+//
+//            // 🔒 Vérification : est-ce que cet employé est déjà chef ailleurs (actif) ?
+//            Chef autreChefActif = session.createQuery(
+//                            "FROM Chef WHERE employe.id = :empId AND dateFin IS NULL", Chef.class)
+//                    .setParameter("empId", employeId)
+//                    .uniqueResult();
+//
+//            if (autreChefActif != null) {
+//                throw new IllegalStateException("Cet employé est déjà chef d’un autre département.");
+//            }
+//
+//            // 🔎 Vérification : est-ce que l'employé appartient bien au département ?
+//            Employe employe = session.get(Employe.class, employeId);
+//            if (employe == null || employe.getDepartement() == null ||
+//                    !employe.getDepartement().getId().equals(departementId)) {
+//                throw new IllegalArgumentException("L'employé ne fait pas partie de ce département.");
+//            }
+//
+//            // ✅ Clôturer le chef actuel s’il existe pour ce département
+//            Chef chefActuel = session.createQuery(
+//                            "FROM Chef WHERE departement.id = :depId AND dateFin IS NULL", Chef.class)
+//                    .setParameter("depId", departementId)
+//                    .uniqueResult();
+//
+//            if (chefActuel != null) {
+//                chefActuel.setDateFin(java.sql.Date.valueOf(LocalDate.now()));
+//                session.update(chefActuel);
+//            }
+//
+//            // ✅ Nommer un nouveau chef
+//            Departement departement = session.get(Departement.class, departementId);
+//
+//            Chef nouveauChef = new Chef();
+//            nouveauChef.setEmploye(employe);
+//            nouveauChef.setDepartement(departement);
+//            nouveauChef.setDateDebut(java.sql.Date.valueOf(LocalDate.now()));
+//            nouveauChef.setDateFin(null);
+//
+//            session.persist(nouveauChef);
+//            tx.commit();
+//
+//        } catch (Exception e) {
+//            if (tx != null) tx.rollback();
+//            e.printStackTrace();
+//            throw new RuntimeException("Erreur lors de la nomination du chef : " + e.getMessage());
+//        } finally {
+//            session.close();
+//        }
+//    }
+
     public void nommerChef(Long employeId, Long departementId) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Transaction tx = null;
@@ -240,14 +296,18 @@ public class ChefService {
                 throw new IllegalStateException("Cet employé est déjà chef d’un autre département.");
             }
 
-            // 🔎 Vérification : est-ce que l'employé appartient bien au département ?
+            // 🔎 Vérification : appartenance + rôle
             Employe employe = session.get(Employe.class, employeId);
             if (employe == null || employe.getDepartement() == null ||
                     !employe.getDepartement().getId().equals(departementId)) {
                 throw new IllegalArgumentException("L'employé ne fait pas partie de ce département.");
             }
 
-            // ✅ Clôturer le chef actuel s’il existe pour ce département
+            if ("ADMIN".equalsIgnoreCase(employe.getRole())) {
+                throw new IllegalArgumentException("Un administrateur ne peut pas être nommé chef.");
+            }
+
+            // ✅ Clôturer le chef actuel s’il existe
             Chef chefActuel = session.createQuery(
                             "FROM Chef WHERE departement.id = :depId AND dateFin IS NULL", Chef.class)
                     .setParameter("depId", departementId)
@@ -278,7 +338,6 @@ public class ChefService {
             session.close();
         }
     }
-
 
 
     public void retirerChef(Long employeId) {

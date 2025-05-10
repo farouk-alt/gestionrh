@@ -56,7 +56,7 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-hover table-striped table-sm table-filterable table-sortable">
+                        <table id="employeTable" class="table table-hover table-striped table-sm table-filterable table-sortable">
                             <thead>
                             <tr>
                                 <th data-sort="id">ID</th>
@@ -93,17 +93,15 @@
                                                 </c:choose>
                                             </td>
                                             <td>
-                                                <c:choose>
-                                                    <c:when test="${employe.role == 'ADMIN'}">
-                                                        <span class="badge bg-danger">Administrateur</span>
-                                                    </c:when>
-                                                    <c:when test="${employe.estChefActuel}">
+                                                <c:if test="${employe.admin}">
+                                                    <span class="badge bg-danger me-1">Administrateur</span>
+                                                </c:if>
+                                                <c:if test="${employe.estChefActuel}">
                                                     <span class="badge bg-success">Chef</span>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <span class="badge bg-primary">Employé</span>
-                                                    </c:otherwise>
-                                                </c:choose>
+                                                </c:if>
+                                                <c:if test="${not employe.admin and not employe.estChefActuel}">
+                                                    <span class="badge bg-primary">Employé</span>
+                                                </c:if>
                                             </td>
                                             <td><fmt:formatDate value="${employe.dateCreation}" pattern="dd/MM/yyyy" /></td>
                                             <td>${employe.soldeConge} jours</td>

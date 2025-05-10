@@ -295,4 +295,33 @@ document.addEventListener("DOMContentLoaded", () => {
     `
   document.head.appendChild(style)
 })
+document.addEventListener('DOMContentLoaded', () => {
+  const table = document.getElementById("employeTable");
+  const headers = table.querySelectorAll("th[data-sort]");
+  const tbody = table.querySelector("tbody");
+
+  const getCellValue = (tr, idx) => tr.children[idx].textContent.trim().toLowerCase();
+
+  const comparer = (idx, asc) => (a, b) => {
+    const v1 = getCellValue(asc ? a : b, idx);
+    const v2 = getCellValue(asc ? b : a, idx);
+    return isNaN(v1) || isNaN(v2) ? v1.localeCompare(v2) : v1 - v2;
+  };
+
+  headers.forEach((th, idx) => {
+    let asc = true;
+    th.style.cursor = "pointer";
+    th.addEventListener("click", () => {
+      const rows = Array.from(tbody.querySelectorAll("tr"));
+      rows.sort(comparer(idx, asc));
+      rows.forEach(row => tbody.appendChild(row));
+      asc = !asc;
+
+      // Optionnel : ajouter ou modifier l'affichage flèches ▲▼
+      headers.forEach(h => h.innerHTML = h.dataset.sort); // reset
+      th.innerHTML = th.dataset.sort + (asc ? " ▲" : " ▼");
+    });
+  });
+});
+
 

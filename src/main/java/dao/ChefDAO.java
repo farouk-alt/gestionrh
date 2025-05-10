@@ -268,7 +268,7 @@ public class ChefDAO {
     public Chef findAncienChefByEmployeId(Long employeId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery(
-                            "from Chef where employe.id = :employeId order by dateDebut desc",
+                            "from Chef where employe.id = :employeId order by dateNomination desc",
                             Chef.class)
                     .setParameter("employeId", employeId)
                     .setMaxResults(1)
@@ -301,6 +301,7 @@ public class ChefDAO {
             session.close();
         }
     }
+
 
 }
 

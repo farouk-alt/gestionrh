@@ -4,24 +4,41 @@
 <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
     <div class="position-sticky pt-3">
         <ul class="nav flex-column">
+
             <li class="nav-item">
-                <a class="nav-link ${pageContext.request.servletPath == '/views/chef/dashboard.jsp' ? 'active' : ''}" href="${pageContext.request.contextPath}/chef/dashboard">
-                    <i class="bi bi-speedometer2 me-1"></i>
-                    Tableau de bord
+                <a class="nav-link ${pageContext.request.servletPath == '/chef/dashboard' ? 'active' : ''}"
+                   href="${pageContext.request.contextPath}/chef/dashboard">
+                    <i class="bi bi-speedometer2 me-1"></i> Tableau de bord
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link ${pageContext.request.servletPath.startsWith('/views/chef/conges') ? 'active' : ''}" href="${pageContext.request.contextPath}/chef/conges">
-                    <i class="bi bi-calendar-check me-1"></i>
-                    Gestion des congés
+                <a class="nav-link ${pageContext.request.servletPath == '/chef/conges' ? 'active' : ''}"
+                   href="${pageContext.request.contextPath}/chef/conges">
+                    <i class="bi bi-check-square me-1"></i> Demandes à valider
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link ${pageContext.request.servletPath == '/chef/conges/historique' ? 'active' : ''}"
+                   href="${pageContext.request.contextPath}/chef/conges/historique">
+                    <i class="bi bi-archive me-1"></i> Historique traitées
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link ${pageContext.request.servletPath.startsWith('/views/employe/conges') ? 'active' : ''}" href="${pageContext.request.contextPath}/employe/conges">
-                    <i class="bi bi-calendar-plus me-1"></i>
-                    Mes congés
+                <a class="nav-link ${pageContext.request.servletPath == '/chef/employes' ? 'active' : ''}"
+                   href="${pageContext.request.contextPath}/chef/employes">
+                    <i class="bi bi-people me-1"></i> Employés du département
                 </a>
             </li>
+
+
+            <li class="nav-item">
+                <a class="nav-link ${pageContext.request.servletPath == '/chef/profil' ? 'active' : ''}"
+                   href="${pageContext.request.contextPath}/chef/profil">
+                    <i class="bi bi-person-circle me-1"></i> Mon Profil
+                </a>
+            </li>
+
         </ul>
     </div>
 </nav>
