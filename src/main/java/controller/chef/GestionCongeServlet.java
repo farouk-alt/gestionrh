@@ -59,8 +59,11 @@ public class GestionCongeServlet extends HttpServlet {
                     // ✅ Calculer le taux d’acceptation (pour la progress bar)
                     Long depId = chef.getDepartement().getId();
                     int totalDemandes = demandeCongeService.countAllByDepartement(depId);
-                    int dejaAcceptees = demandeCongeService.countByEtatAndDepartement("ACCEPTE", depId);
+                    int dejaAcceptees = demandeCongeService.countAcceptedStillActiveByDepartement(depId);
                     double taux = (totalDemandes > 0) ? (dejaAcceptees * 100.0 / totalDemandes) : 0.0;
+                    int progressionAcceptation = demandeCongeService.calculerPourcentageAcceptationActuel(chef.getDepartement().getId());
+                    request.setAttribute("progressionAcceptation", progressionAcceptation);
+
 
                     request.setAttribute("progressionAcceptation", taux);
 

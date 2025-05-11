@@ -8,7 +8,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -37,10 +36,6 @@ public class DemandeCongeServlet extends HttpServlet {
         }
 
         String pathInfo = request.getPathInfo();
-        System.out.println(">> URI = " + request.getRequestURI());
-        System.out.println(">> pathInfo = " + request.getPathInfo());
-
-
 
         if (pathInfo == null || pathInfo.equals("/")) {
             List<DemandeConge> demandes = demandeCongeService.getDemandesParEmploye(employeId);
@@ -61,13 +56,27 @@ public class DemandeCongeServlet extends HttpServlet {
                     request.setAttribute("demande", demande);
                     request.getRequestDispatcher("/views/employe/conges/details.jsp").forward(request, response);
                 } else {
-                    response.sendRedirect(request.getContextPath() + "/employe/conges");
+                    response.sendRedirect(request.getContextPath() + "/employe/mes-conges");
                 }
             } catch (NumberFormatException e) {
-                response.sendRedirect(request.getContextPath() + "/employe/conges");
+                response.sendRedirect(request.getContextPath() + "/employe/mes-conges");
+            }
+        } else if (pathInfo.startsWith("/modifier/")) {
+            try {
+                Long demandeId = Long.parseLong(pathInfo.substring(10));
+                DemandeConge demande = demandeCongeService.getDemandeById(demandeId);
+
+                if (demande != null && demande.getEmploye().getId().equals(employeId) && demande.getEtat() == DemandeConge.EtatDemande.EN_ATTENTE) {
+                    request.setAttribute("demande", demande);
+                    request.getRequestDispatcher("/views/employe/conges/modifier.jsp").forward(request, response);
+                } else {
+                    response.sendRedirect(request.getContextPath() + "/employe/mes-conges");
+                }
+            } catch (NumberFormatException e) {
+                response.sendRedirect(request.getContextPath() + "/employe/mes-conges");
             }
         } else {
-            response.sendRedirect(request.getContextPath() + "/employe/conges");
+            response.sendRedirect(request.getContextPath() + "/employe/mes-conges");
         }
     }
 
@@ -76,7 +85,6 @@ public class DemandeCongeServlet extends HttpServlet {
             throws ServletException, IOException {
 
         HttpSession session = request.getSession();
-
         Long employeId = (Long) session.getAttribute("employeId");
 
         if (employeId == null) {
@@ -85,8 +93,6 @@ public class DemandeCongeServlet extends HttpServlet {
         }
 
         String pathInfo = request.getPathInfo();
-
-
 
         if (pathInfo != null && pathInfo.equals("/demander")) {
             String dateDebutStr = request.getParameter("dateDebut");
@@ -111,12 +117,18 @@ public class DemandeCongeServlet extends HttpServlet {
                     request.getRequestDispatcher("/views/employe/conges/formulaire.jsp").forward(request, response);
                     return;
                 }
-
+                if (demandeCongeService.hasPendingRequest(employeId)) {
+                    request.setAttribute("error", "❌ Vous avez déjà une demande en attente.");
+                    request.setAttribute("employe", employeService.getEmployeById(employeId));
+                    request.getRequestDispatcher("/views/employe/conges/formulaire.jsp").forward(request, response);
+                    return;
+                }
 
                 boolean success = demandeCongeService.creerDemandeConge(employeId, dateDebut, dateFin, motif);
 
                 if (success) {
-                    response.sendRedirect(request.getContextPath() + "/employe/conges");
+                    session.setAttribute("toastMessage", "✅ Demande envoyée avec succès !");
+                    response.sendRedirect(request.getContextPath() + "/employe/mes-conges");
                 } else {
                     request.setAttribute("error", "Solde de congé insuffisant");
                     request.setAttribute("employe", employeService.getEmployeById(employeId));
@@ -128,8 +140,76 @@ public class DemandeCongeServlet extends HttpServlet {
                 request.setAttribute("employe", employeService.getEmployeById(employeId));
                 request.getRequestDispatcher("/views/employe/conges/formulaire.jsp").forward(request, response);
             }
-        } else {
-            response.sendRedirect(request.getContextPath() + "/employe/conges");
+
+        } else if (pathInfo.startsWith("/modifier/")) {
+            try {
+                Long demandeId = Long.parseLong(pathInfo.substring(10));
+                DemandeConge demande = demandeCongeService.getDemandeById(demandeId);
+
+                if (demande != null && demande.getEmploye().getId().equals(employeId)
+                        && demande.getEtat() == DemandeConge.EtatDemande.EN_ATTENTE) {
+
+                    String dateDebutStr = request.getParameter("dateDebut");
+                    String dateFinStr = request.getParameter("dateFin");
+                    String motif = request.getParameter("motif");
+
+                    if (dateDebutStr == null || dateFinStr == null || motif == null || motif.trim().isEmpty()) {
+                        request.setAttribute("error", "❌ Tous les champs sont obligatoires.");
+                        request.setAttribute("demande", demande);
+                        request.getRequestDispatcher("/views/employe/conges/modifier.jsp").forward(request, response);
+                        return;
+                    }
+
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    Date dateDebut = sdf.parse(dateDebutStr);
+                    Date dateFin = sdf.parse(dateFinStr);
+
+                    if (dateDebut.after(dateFin)) {
+                        request.setAttribute("error", "❌ La date de début doit être avant la date de fin.");
+                        request.setAttribute("demande", demande);
+                        request.getRequestDispatcher("/views/employe/conges/modifier.jsp").forward(request, response);
+                        return;
+                    }
+
+                    long joursDemandes = (dateFin.getTime() - dateDebut.getTime()) / (1000 * 60 * 60 * 24) + 1;
+                    Employe employe = employeService.getEmployeById(employeId);
+
+                    long anciensJours = (demande.getDateFin().getTime() - demande.getDateDebut().getTime()) / (1000 * 60 * 60 * 24) + 1;
+                    long difference = joursDemandes - anciensJours;
+
+                    if (difference > 0 && difference > employe.getSoldeConge()) {
+                        request.setAttribute("error", "❌ Solde de congé insuffisant pour cette modification.");
+                        request.setAttribute("demande", demande);
+                        request.getRequestDispatcher("/views/employe/conges/modifier.jsp").forward(request, response);
+                        return;
+                    }
+
+                    demande.setDateDebut(dateDebut);
+                    demande.setDateFin(dateFin);
+                    demande.setMotif(motif.trim());
+                    demande.setDateMiseAjour(new Date());
+
+                    demandeCongeService.update(demande);
+                    session.setAttribute("toastMessage", "✅ Demande modifiée avec succès !");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            response.sendRedirect(request.getContextPath() + "/employe/mes-conges");
+
+        } else if (pathInfo.startsWith("/supprimer/")) {
+            try {
+                Long demandeId = Long.parseLong(pathInfo.substring(11));
+                DemandeConge demande = demandeCongeService.getDemandeById(demandeId);
+
+                if (demande != null && demande.getEmploye().getId().equals(employeId) && demande.getEtat() == DemandeConge.EtatDemande.EN_ATTENTE) {
+                    demandeCongeService.supprimerDemandeSiEnAttente(demandeId, employeId);
+                    session.setAttribute("toastMessage", "❌ Demande supprimée avec succès.");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            response.sendRedirect(request.getContextPath() + "/employe/mes-conges");
         }
     }
 }

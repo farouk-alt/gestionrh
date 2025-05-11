@@ -65,6 +65,20 @@ public class DemandeCongeService {
 
         return true;
     }
+    public int calculerPourcentageAcceptationActuel(Long departementId) {
+        String totalQuery = "SELECT COUNT(d) FROM DemandeConge d WHERE d.employe.departement.id = :id";
+        String actifsQuery = "SELECT COUNT(d) FROM DemandeConge d WHERE d.etat = :etat AND d.employe.departement.id = :id AND d.dateFin >= CURRENT_DATE";
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        long total = session.createQuery(totalQuery, Long.class)
+                .setParameter("id", departementId).getSingleResult();
+
+        long actifs = session.createQuery(actifsQuery, Long.class)
+                .setParameter("etat", DemandeConge.EtatDemande.ACCEPTE)
+                .setParameter("id", departementId).getSingleResult();
+
+        return total == 0 ? 0 : (int) ((double) actifs / total * 100);
+    }
+
 
 
     public List<DemandeConge> getDemandesParEmploye(Long employeId) {
@@ -126,6 +140,26 @@ public class DemandeCongeService {
             session.close();
         }
     }
+    public boolean hasPendingRequest(Long employeId) {
+        return demandeCongeDAO.existsPendingByEmploye(employeId);
+    }
+    public int countAcceptedStillActiveByDepartement(Long departementId) {
+        return demandeCongeDAO.countAcceptedStillActiveByDepartement(departementId);
+    }
+    public void update(DemandeConge demande) {
+        demandeCongeDAO.update(demande);
+    }
+    public boolean supprimerDemandeSiEnAttente(Long demandeId, Long employeId) {
+        DemandeConge demande = demandeCongeDAO.getById(demandeId);
+        if (demande != null &&
+                demande.getEmploye().getId().equals(employeId) &&
+                demande.getEtat() == DemandeConge.EtatDemande.EN_ATTENTE) {
+            demandeCongeDAO.delete(demandeId);
+            return true;
+        }
+        return false;
+    }
+
 
 
 

@@ -291,6 +291,42 @@ public class DemandeCongeDAO {
             session.close();
         }
     }
+    public boolean existsPendingByEmploye(Long employeId) {
+        String hql = "SELECT COUNT(d) FROM DemandeConge d WHERE d.etat = :etat AND d.employe.id = :employeId";
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Long count = session.createQuery(hql, Long.class)
+                .setParameter("etat", DemandeConge.EtatDemande.EN_ATTENTE)
+                .setParameter("employeId", employeId)
+                .uniqueResult();
+        return count != null && count > 0;
+    }
+    public int countAcceptedStillActiveByDepartement(Long departementId) {
+        String hql = "SELECT COUNT(d) FROM DemandeConge d WHERE d.etat = :etat AND d.employe.departement.id = :depId AND d.dateFin >= :today";
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Long count = session.createQuery(hql, Long.class)
+                .setParameter("etat", DemandeConge.EtatDemande.ACCEPTE)
+                .setParameter("depId", departementId)
+                .setParameter("today", new Date())
+                .uniqueResult();
+        return count != null ? count.intValue() : 0;
+    }
+    public void delete(Long id) {
+        Transaction tx = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            tx = session.beginTransaction();
+            DemandeConge demande = session.get(DemandeConge.class, id);
+            if (demande != null) {
+                session.delete(demande);
+            }
+            tx.commit();
+        } catch (Exception e) {
+            if (tx != null) tx.rollback();
+            e.printStackTrace();
+        }
+    }
+
+
+
 
 
 }

@@ -7,7 +7,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Chef;
 import model.DemandeConge;
+import model.Departement;
 import service.DemandeCongeService;
+import service.DepartementService;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -18,10 +20,15 @@ import java.util.List;
 public class RechercheCongeServlet extends HttpServlet {
 
     private final DemandeCongeService demandeCongeService = new DemandeCongeService();
+    private final DepartementService departementService = new DepartementService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // ✅ Charger la liste des départements
+        List<Departement> departements = departementService.getAllDepartements();
+        request.setAttribute("departements", departements);
+
         // Affichage du formulaire de recherche
         request.getRequestDispatcher("/views/admin/conges/recherche.jsp").forward(request, response);
     }
@@ -35,11 +42,10 @@ public class RechercheCongeServlet extends HttpServlet {
         String departement = request.getParameter("nomDepartement");
         String dateStr = request.getParameter("dateMiseAJour");
 
-// ✅ Trimmer les champs pour éviter les espaces vides
-        if (nom != null) nom = nom.trim();
-        if (prenom != null) prenom = prenom.trim();
+        // ✅ Trimmer les champs pour éviter les espaces vides et uniformiser la casse
+        if (nom != null) nom = nom.trim().toLowerCase();
+        if (prenom != null) prenom = prenom.trim().toLowerCase();
         if (departement != null) departement = departement.trim();
-
 
         Date dateMaj = null;
         try {
@@ -48,6 +54,7 @@ public class RechercheCongeServlet extends HttpServlet {
             }
         } catch (Exception e) {
             request.setAttribute("erreur", "Format de date invalide.");
+            request.setAttribute("departements", departementService.getAllDepartements());
             request.getRequestDispatcher("/views/admin/conges/recherche.jsp").forward(request, response);
             return;
         }
@@ -59,6 +66,7 @@ public class RechercheCongeServlet extends HttpServlet {
                 dateMaj == null) {
 
             request.setAttribute("erreur", "Veuillez remplir tous les champs requis.");
+            request.setAttribute("departements", departementService.getAllDepartements());
             request.getRequestDispatcher("/views/admin/conges/recherche.jsp").forward(request, response);
             return;
         }
@@ -66,9 +74,8 @@ public class RechercheCongeServlet extends HttpServlet {
         // ✅ Appel au service si tout est OK
         List<DemandeConge> resultats = demandeCongeService.rechercherParCriteres(nom, prenom, departement, dateMaj);
         request.setAttribute("resultats", resultats);
-        request.getSession().setAttribute("resultats", resultats); // 📌 ICI
+        request.setAttribute("departements", departementService.getAllDepartements());
+        request.getSession().setAttribute("resultats", resultats);
         request.getRequestDispatcher("/views/admin/conges/recherche.jsp").forward(request, response);
     }
-
-
 }

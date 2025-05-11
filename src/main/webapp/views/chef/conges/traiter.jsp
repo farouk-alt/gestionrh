@@ -50,15 +50,20 @@
                             <label class="form-label">
                                 Taux d’approbation actuel du département : <strong>${progressionAcceptation}%</strong>
                             </label>
-                            <div class="progress">
-                                <div class="progress-bar
-                                    ${progressionAcceptation < 50 ? 'bg-success' : progressionAcceptation == 50 ? 'bg-warning' : 'bg-danger'}"
-                                     role="progressbar"
-                                     style="width: ${progressionAcceptation}%;"
-                                     aria-valuenow="${progressionAcceptation}" aria-valuemin="0" aria-valuemax="100">
-                                        ${progressionAcceptation}%
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="flex-grow-1">
+                                    <div class="progress">
+                                        <div class="progress-bar
+                ${progressionAcceptation < 50 ? 'bg-success' : progressionAcceptation == 50 ? 'bg-warning' : 'bg-danger'}"
+                                             role="progressbar"
+                                             style="width: ${progressionAcceptation}%;"
+                                             aria-valuenow="${progressionAcceptation}" aria-valuemin="0" aria-valuemax="100">
+                                        </div>
+                                    </div>
                                 </div>
+                                <span class="badge bg-light text-dark">${progressionAcceptation}%</span>
                             </div>
+
                         </div>
                     </c:if>
 

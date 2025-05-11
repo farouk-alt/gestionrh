@@ -25,11 +25,11 @@
             </li>
             <!-- ✅ Accès espace Chef uniquement si l’admin est chef actif -->
             <li class="nav-item">
-                <a class="nav-link ${pageContext.request.servletPath == '/chef/conges/historique' ? 'active' : ''}"
-                   href="${pageContext.request.contextPath}/chef/conges/historique">
-                    <i class="bi bi-archive me-1"></i> Historique traitées
+                <a class="nav-link" href="${pageContext.request.contextPath}/admin/recherche-conge">
+                    <i class="bi bi-search"></i> Rechercher Congé (Chef)
                 </a>
             </li>
+
             <li class="nav-item">
                 <a class="nav-link ${pageContext.request.servletPath == '/admin/profil' ? 'active' : ''}"
                    href="${pageContext.request.contextPath}/admin/profil">

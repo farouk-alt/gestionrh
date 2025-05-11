@@ -21,6 +21,20 @@
 
 <jsp:include page="../../includes/header.jsp"/>
 <jsp:include page="../../includes/employe-sidebar.jsp"/>
+<c:if test="${not empty sessionScope.toastMessage}">
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div class="toast align-items-center text-white bg-success border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                        ${sessionScope.toastMessage}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+    <c:remove var="toastMessage" scope="session" />
+</c:if>
+
 
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 animate__animated animate__fadeIn">
     <h2 class="mb-4">📅 Mes demandes de congé</h2>
@@ -49,6 +63,7 @@
                         <th>État</th>
                         <th>Date maj</th>
                         <th>Traité par</th>
+                        <th>Actions</th>
 
                     </tr>
                     </thead>
@@ -61,6 +76,7 @@
                             <td><fmt:formatDate value="${conge.dateFin}" pattern="yyyy-MM-dd" /></td>
 
                             <td>${conge.motif}</td>
+
                             <td>
                                 <c:choose>
                                     <c:when test="${conge.etat == 'EN_ATTENTE'}">
@@ -86,6 +102,34 @@
                                     </c:when>
                                     <c:otherwise>-</c:otherwise>
                                 </c:choose>
+                            </td>
+                            <td>
+                                <c:if test="${conge.etat == 'EN_ATTENTE'}">
+                                    <!-- Icône Modifier -->
+                                    <a href="${pageContext.request.contextPath}/employe/conges/modifier/${conge.id}"
+                                       class="btn btn-sm btn-outline-warning me-1"
+                                       title="Modifier">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+
+                                    <!-- Icône Supprimer -->
+                                    <form action="${pageContext.request.contextPath}/employe/conges/supprimer/${conge.id}"
+                                          method="post" style="display:inline;"
+                                          onsubmit="return confirm('Confirmer la suppression ?');">
+                                        <button type="submit"
+                                                class="btn btn-sm btn-outline-danger"
+                                                title="Supprimer">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    </form>
+                                </c:if>
+
+                                <!-- Icône Voir -->
+                                <a href="${pageContext.request.contextPath}/employe/conges/voir/${conge.id}"
+                                   class="btn btn-sm btn-outline-primary"
+                                   title="Voir les détails">
+                                    <i class="bi bi-eye"></i>
+                                </a>
                             </td>
 
                         </tr>
