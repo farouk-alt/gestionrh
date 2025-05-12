@@ -19,6 +19,7 @@
         <mapping class="model.Departement"/>
         <mapping class="model.DemandeConge"/>
         <mapping class="model.Chef"/>
+        <mapping class="model.Notification"/>
 
 
     </session-factory>

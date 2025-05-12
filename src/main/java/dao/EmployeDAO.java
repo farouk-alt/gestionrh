@@ -129,16 +129,21 @@
 //}
 package dao;
 
+import model.Chef;
 import model.Employe;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.query.Query;
+
+import service.NotificationService;
 import util.HibernateUtil;
 
 import java.util.List;
 
 public class EmployeDAO {
+    private final ChefDAO chefDAO = new ChefDAO();
+    private final NotificationService notifService = new NotificationService();
+
 
     public void saveEmploye(Employe employe) {
         Transaction tx = null;
@@ -146,11 +151,27 @@ public class EmployeDAO {
             tx = session.beginTransaction();
             session.save(employe);
             tx.commit();
+
+            // 🔔 Notification au chef du département
+            if (employe.getDepartement() != null) {
+                Long depId = employe.getDepartement().getId();
+                Chef chef = chefDAO.getChefActuelByDepartementId(depId);
+                if (chef != null && chef.getEmploye() != null) {
+                    notifService.creerNotification(
+                            chef.getEmploye(),
+                            "👤 Nouvel employé dans votre département : " + employe.getNomComplet(),
+                            "info"
+                    );
+                }
+            }
+
         } catch (Exception e) {
             if (tx != null) tx.rollback();
             e.printStackTrace();
         }
     }
+
+
 
     public void updateEmploye(Employe employe) {
         Transaction tx = null;
@@ -244,5 +265,16 @@ public class EmployeDAO {
             session.close();
         }
     }
+    public Employe findAdmin() {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        try {
+            return session.createQuery("FROM Employe e WHERE e.admin = true", Employe.class)
+                    .setMaxResults(1)
+                    .uniqueResult();
+        } finally {
+            session.close();
+        }
+    }
+
 
 }

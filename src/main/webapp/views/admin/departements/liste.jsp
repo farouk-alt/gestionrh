@@ -10,6 +10,22 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css"/>
+    <style>
+        #mainContent.dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+        #mainContent.dark-mode h1, #mainContent.dark-mode h2,
+        #mainContent.dark-mode th, #mainContent.dark-mode td,
+        #mainContent.dark-mode .card-title, #mainContent.dark-mode .card-body,
+        #mainContent.dark-mode label {
+            color: inherit !important;
+        }
+        #mainContent {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+    </style>
 </head>
 <body>
 <jsp:include page="../../includes/header.jsp" />
@@ -18,7 +34,7 @@
     <div class="row">
         <jsp:include page="../../includes/admin-sidebar.jsp" />
 
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+        <main id="mainContent" class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">Gestion des départements</h1>
                 <a href="${pageContext.request.contextPath}/admin/departements/ajouter" class="btn btn-primary">
@@ -48,7 +64,7 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-hover table-striped table-sm">
+                        <table id="depsTable" class="table table-hover table-striped table-sm">
                             <thead>
                             <tr>
                                 <th>ID</th>
@@ -111,9 +127,51 @@
     </div>
 </div>
 
-<jsp:include page="../../includes/footer.jsp" />
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="${pageContext.request.contextPath}/assets/js/script.js"></script>
+<script>
+    const main = document.getElementById("mainContent");
+    const themeIcon = document.getElementById("themeIcon");
+    const toggleBtn = document.getElementById("toggleDarkMode");
+
+    const applyTheme = (mode) => {
+        if (!main) return;
+        main.classList.toggle("dark-mode", mode === "dark");
+        if (themeIcon) themeIcon.className = mode === "dark" ? "bi bi-sun-fill" : "bi bi-moon-fill";
+        localStorage.setItem("theme", mode);
+    };
+
+    const currentMode = localStorage.getItem("theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    applyTheme(currentMode === "dark" || (prefersDark && !currentMode) ? "dark" : "light");
+
+    if (toggleBtn) {
+        toggleBtn.addEventListener("click", () => {
+            const isDark = main.classList.contains("dark-mode");
+            applyTheme(isDark ? "light" : "dark");
+        });
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        $('#depsTable').DataTable({
+            "language": {
+                "search": "🔎 Recherche :",
+                "lengthMenu": "Afficher _MENU_ entrées",
+                "info": "Affichage de _START_ à _END_ sur _TOTAL_ entrées",
+                "paginate": {
+                    "first": "Premier",
+                    "last": "Dernier",
+                    "next": "Suivant",
+                    "previous": "Précédent"
+                }
+            }
+        });
+    });
+</script>
+
 </body>
 </html>

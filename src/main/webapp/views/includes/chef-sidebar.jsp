@@ -1,7 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse animate__animated animate__fadeInLeft">
 
-<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
     <div class="position-sticky pt-3">
         <ul class="nav flex-column">
 
@@ -30,6 +31,17 @@
                     <i class="bi bi-people me-1"></i> Employés du département
                 </a>
             </li>
+            <li class="nav-item position-relative">
+                <a class="nav-link d-flex align-items-center" href="${pageContext.request.contextPath}/notifications">
+                    <i class="bi bi-bell-fill me-2"></i> Notifications
+                    <c:if test="${notifCount > 0}">
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger animate__animated animate__bounceIn">
+                    ${notifCount}
+            </span>
+                    </c:if>
+                </a>
+            </li>
+
 
 
             <li class="nav-item">

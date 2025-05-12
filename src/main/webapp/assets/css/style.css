@@ -199,3 +199,64 @@ canvas#etatChart {
   font-size: 1.2rem;
   cursor: pointer;
 }
+body.dark-mode {
+  background-color: #121212;
+  color: #f1f1f1;
+}
+
+
+.dark-mode .btn {
+  border-color: #444;
+}
+
+.dark-mode .btn-primary {
+  background-color: #0d6efd;
+}
+.sidebar {
+  background-color: #f8f9fa;
+  color: #212529;
+}
+
+.sidebar .nav-link {
+  font-weight: 500;
+  color: #333;
+  padding: 0.75rem 1rem;
+  border-radius: 0.25rem;
+  margin: 0.2rem 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.sidebar .nav-link:hover {
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+.sidebar .nav-link.active {
+  color: #007bff;
+  background-color: rgba(0, 123, 255, 0.1);
+}
+body.dark-mode .sidebar {
+  background-color: #1b1b1b;
+  color: #f1f1f1;
+}
+
+body.dark-mode .sidebar .nav-link {
+  color: #ccc;
+}
+
+body.dark-mode .sidebar .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+body.dark-mode .sidebar .nav-link.active {
+  background-color: #0d6efd;
+  color: white;
+}
+@keyframes pulse {
+  0% { transform: translate(-50%, 10%) scale(1); opacity: 0.8; }
+  50% { transform: translate(-50%, 10%) scale(1.2); opacity: 1; }
+  100% { transform: translate(-50%, 10%) scale(1); opacity: 0.8; }
+}
+
+
+

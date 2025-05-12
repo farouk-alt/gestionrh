@@ -56,20 +56,20 @@ public class GestionCongeServlet extends HttpServlet {
                 if (demande != null && demande.getEmploye().getDepartement().getId().equals(chef.getDepartement().getId())) {
                     request.setAttribute("demande", demande);
 
-                    // ✅ Calculer le taux d’acceptation (pour la progress bar)
                     Long depId = chef.getDepartement().getId();
-                    int totalDemandes = demandeCongeService.countAllByDepartement(depId);
-                    int dejaAcceptees = demandeCongeService.countAcceptedStillActiveByDepartement(depId);
-                    double taux = (totalDemandes > 0) ? (dejaAcceptees * 100.0 / totalDemandes) : 0.0;
-                    int progressionAcceptation = demandeCongeService.calculerPourcentageAcceptationActuel(chef.getDepartement().getId());
+
+                    // ✅ ➕ AJOUTE ICI :
+                    int nbEmployesConge = demandeCongeService.countEmployesEnConge(depId);
+                    int nbTotalEmployes = demandeCongeService.countEmployesDansDepartement(depId);
+                    request.setAttribute("nbEmployesConge", nbEmployesConge);
+                    request.setAttribute("nbTotalEmployes", nbTotalEmployes);
+
+                    int progressionAcceptation = demandeCongeService.calculerTauxAcceptationEmployes(depId);
                     request.setAttribute("progressionAcceptation", progressionAcceptation);
 
-
-                    request.setAttribute("progressionAcceptation", taux);
-
-                    // ✅ Envoyer à la page JSP
                     request.getRequestDispatcher("/views/chef/conges/traiter.jsp").forward(request, response);
-                } else {
+                }
+ else {
                     response.sendRedirect(request.getContextPath() + "/chef/conges");
                 }
             } catch (NumberFormatException e) {
@@ -86,7 +86,6 @@ public class GestionCongeServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/chef/conges");
         }
     }
-
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -119,23 +118,22 @@ public class GestionCongeServlet extends HttpServlet {
 
                     if ("approuver".equals(action)) {
                         Long depId = chef.getDepartement().getId();
-                        int totalDemandes = demandeCongeService.countAllByDepartement(depId);
-                        int dejaAcceptees = demandeCongeService.countByEtatAndDepartement("ACCEPTE", depId);
+                        int progressionEmployes = demandeCongeService.calculerTauxAcceptationEmployes(depId);
 
-                        // Vérification du seuil 50%
-                        if (totalDemandes > 0 && ((double) dejaAcceptees / totalDemandes) >= 0.5) {
-                            request.setAttribute("erreur", "⚠️ Vous avez atteint la limite de 50% de demandes acceptées pour ce département.");
+                        // ✅ Si plus de 50% des employés sont en congé approuvé
+                        if (progressionEmployes >= 50) {
+                            request.setAttribute("erreur", "⚠️ Vous avez atteint la limite de 50% des employés en congé accepté.");
                             request.setAttribute("demande", demande);
+                            request.setAttribute("progressionAcceptation", progressionEmployes);
                             request.getRequestDispatcher("/views/chef/conges/traiter.jsp").forward(request, response);
                             return;
                         }
 
+                        // ✅ Sinon, approuver la demande
                         demandeCongeService.approuverDemandeConge(demandeId, chef.getEmploye());
-
                     }
                     else if ("refuser".equals(action)) {
                         demandeCongeService.refuserDemandeConge(demandeId, chef.getEmploye());
-
                     }
                 }
 
@@ -148,4 +146,5 @@ public class GestionCongeServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/chef/conges");
         }
     }
+
 }

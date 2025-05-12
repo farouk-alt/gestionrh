@@ -32,6 +32,7 @@ public class EmployeProfilServlet extends HttpServlet {
         }
 
         request.setAttribute("employe", employeService.getEmployeById(employe.getId()));
+
         request.getRequestDispatcher("/views/employe/profil.jsp").forward(request, response);
     }
 

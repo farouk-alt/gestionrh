@@ -7,8 +7,13 @@ import model.Employe;
 import org.hibernate.Session;
 import util.HibernateUtil;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class DemandeCongeService {
 
@@ -18,11 +23,6 @@ public class DemandeCongeService {
     public boolean creerDemandeConge(Long employeId, Date dateDebut, Date dateFin, String motif) {
         Employe employe = employeDAO.getEmployeById(employeId);
         if (employe == null) return false;
-
-        long diff = dateFin.getTime() - dateDebut.getTime();
-        int nombreJours = (int) (diff / (1000 * 60 * 60 * 24)) + 1;
-
-        if (employe.getSoldeConge() < nombreJours) return false;
 
         DemandeConge demande = new DemandeConge();
         demande.setEmploye(employe);
@@ -39,16 +39,44 @@ public class DemandeCongeService {
         DemandeConge demande = demandeCongeDAO.getById(demandeId);
         if (demande == null || demande.getEtat() != DemandeConge.EtatDemande.EN_ATTENTE) return false;
 
+        Employe employe = demande.getEmploye();
+
+        // 🔁 Convertir les dates de la demande
+        Date utilDateDebut = new Date(demande.getDateDebut().getTime());
+        Date utilDateFin = new Date(demande.getDateFin().getTime());
+
+        LocalDate dateDebut = utilDateDebut.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate dateFin = utilDateFin.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+
+        // 🔍 Exclure la demande en cours du calcul
+        List<DemandeConge> congesExistants = getCongesChevauchants(employe.getId(), dateDebut, dateFin)
+                .stream()
+                .filter(c -> !c.getId().equals(demandeId)) // ✅ exclure
+                .collect(Collectors.toList());
+
+        // 🧮 Calcul intelligent
+        int joursAAppliquer = calculerJoursAAppliquer(dateDebut, dateFin, congesExistants);
+
+        // ❌ Si solde insuffisant, on refuse l'approbation
+        if (joursAAppliquer > employe.getSoldeConge()) {
+            return false;
+        }
+
+        // ✅ Mise à jour seulement si solde suffisant
+        employe.setSoldeConge(employe.getSoldeConge() - joursAAppliquer);
+        employeDAO.updateEmploye(employe);
+
         demande.setEtat(DemandeConge.EtatDemande.ACCEPTE);
         demande.setDateMiseAjour(new Date());
-        demande.setUpdatedBy(updatedBy); // ✅ ici
+        demande.setUpdatedBy(updatedBy);
         demandeCongeDAO.update(demande);
 
-        Employe employe = demande.getEmploye();
-        long diff = demande.getDateFin().getTime() - demande.getDateDebut().getTime();
-        int nbJours = (int) (diff / (1000 * 60 * 60 * 24)) + 1;
-        employe.setSoldeConge(employe.getSoldeConge() - nbJours);
-        employeDAO.updateEmploye(employe);
+        // 🔔 Notifications
+        NotificationService notifService = new NotificationService();
+        Employe admin = employeDAO.findAdmin();
+        notifService.creerNotification(admin, "Le chef " + updatedBy.getNomComplet() + " a approuvé une demande de congé.", "success");
+        notifService.creerNotification(employe, "Votre demande de congé a été approuvée par " + updatedBy.getNomComplet(), "success");
 
         return true;
     }
@@ -60,11 +88,21 @@ public class DemandeCongeService {
 
         demande.setEtat(DemandeConge.EtatDemande.REFUSE);
         demande.setDateMiseAjour(new Date());
-        demande.setUpdatedBy(updatedBy); // ✅ ici aussi
+        demande.setUpdatedBy(updatedBy);
         demandeCongeDAO.update(demande);
+
+        // ✅ Récupérer les destinataires
+        Employe employe = demande.getEmploye();
+        Employe admin = employeDAO.findAdmin();
+
+        // ✅ Envoyer les notifications
+        NotificationService notifService = new NotificationService();
+        notifService.creerNotification(admin, "Le chef " + updatedBy.getNomComplet() + " a refusé une demande de congé.", "danger");
+        notifService.creerNotification(employe, "Votre demande de congé a été refusée par " + updatedBy.getNomComplet(), "danger");
 
         return true;
     }
+
     public int calculerPourcentageAcceptationActuel(Long departementId) {
         String totalQuery = "SELECT COUNT(d) FROM DemandeConge d WHERE d.employe.departement.id = :id";
         String actifsQuery = "SELECT COUNT(d) FROM DemandeConge d WHERE d.etat = :etat AND d.employe.departement.id = :id AND d.dateFin >= CURRENT_DATE";
@@ -159,7 +197,93 @@ public class DemandeCongeService {
         }
         return false;
     }
+    public List<DemandeConge> getCongesChevauchants(Long employeId, LocalDate dateDebut, LocalDate dateFin) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 
+            Date dateDebutConverted = Date.from(dateDebut.atStartOfDay(ZoneId.systemDefault()).toInstant());
+            Date dateFinConverted = Date.from(dateFin.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+            String hql = "FROM DemandeConge dc WHERE dc.employe.id = :employeId " +
+                    "AND dc.etat = 'ACCEPTE' " +
+                    "AND dc.dateDebut <= :dateFin " +
+                    "AND dc.dateFin >= :dateDebut";
+
+            return session.createQuery(hql, DemandeConge.class)
+                    .setParameter("employeId", employeId)
+                    .setParameter("dateDebut", dateDebutConverted) // ✅ converted
+                    .setParameter("dateFin", dateFinConverted)     // ✅ converted
+                    .list();
+        }
+    }
+
+
+    public int calculerJoursAAppliquer(LocalDate dateDebut, LocalDate dateFin, List<DemandeConge> congesExistants) {
+        Set<LocalDate> joursDemande = new HashSet<>();
+        for (LocalDate date = dateDebut; !date.isAfter(dateFin); date = date.plusDays(1)) {
+            joursDemande.add(date);
+        }
+        for (DemandeConge conge : congesExistants) {
+            LocalDate debut = ((java.sql.Date) conge.getDateDebut()).toLocalDate();
+            LocalDate fin = ((java.sql.Date) conge.getDateFin()).toLocalDate();
+
+            for (LocalDate date = debut; !date.isAfter(fin); date = date.plusDays(1)) {
+                joursDemande.remove(date);
+            }
+        }
+
+
+
+        return joursDemande.size(); // ✅ Nombre de jours à déduire réellement
+    }
+    public int calculerTauxAcceptationEmployes(Long departementId) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            // ❌ Ne pas inclure le chef actuel dans le total
+            String totalHql = "SELECT COUNT(e) FROM Employe e " +
+                    "WHERE e.departement.id = :id " +
+                    "AND e.id NOT IN (SELECT c.employe.id FROM Chef c WHERE c.dateFin IS NULL)";
+            Long totalEmployes = session.createQuery(totalHql, Long.class)
+                    .setParameter("id", departementId)
+                    .uniqueResult();
+
+            if (totalEmployes == null || totalEmployes == 0) return 0;
+
+            // ✅ Nombre d'employés (hors chef) ayant un congé accepté encore actif
+            String actifsHql = "SELECT COUNT(DISTINCT d.employe.id) FROM DemandeConge d " +
+                    "WHERE d.etat = :etat AND d.employe.departement.id = :id " +
+                    "AND d.dateFin >= CURRENT_DATE " +
+                    "AND d.employe.id NOT IN (SELECT c.employe.id FROM Chef c WHERE c.dateFin IS NULL)";
+            Long employesEnConge = session.createQuery(actifsHql, Long.class)
+                    .setParameter("etat", DemandeConge.EtatDemande.ACCEPTE)
+                    .setParameter("id", departementId)
+                    .uniqueResult();
+
+            return (int) ((double) employesEnConge / totalEmployes * 100);
+        }
+    }
+
+    public int countEmployesDansDepartement(Long departementId) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            String hql = "SELECT COUNT(e) FROM Employe e " +
+                    "WHERE e.departement.id = :id " +
+                    "AND e.id NOT IN (SELECT c.employe.id FROM Chef c WHERE c.dateFin IS NULL)";
+            Long count = session.createQuery(hql, Long.class)
+                    .setParameter("id", departementId)
+                    .uniqueResult();
+            return count != null ? count.intValue() : 0;
+        }
+    }
+
+
+    public int countEmployesEnConge(Long departementId) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            String hql = "SELECT COUNT(DISTINCT d.employe.id) FROM DemandeConge d " +
+                    "WHERE d.etat = :etat AND d.employe.departement.id = :id AND d.dateFin >= CURRENT_DATE";
+            return session.createQuery(hql, Long.class)
+                    .setParameter("etat", DemandeConge.EtatDemande.ACCEPTE)
+                    .setParameter("id", departementId)
+                    .uniqueResult().intValue();
+        }
+    }
 
 
 
