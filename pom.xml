@@ -23,6 +23,11 @@
       <version>3.1.0</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.mindrot</groupId>
+      <artifactId>jbcrypt</artifactId>
+      <version>0.4</version>
+    </dependency>
 
     <!-- ✅ Jakarta JSTL (Standard Taglibs) -->
     <dependency>
@@ -71,5 +76,15 @@
   </dependencies>
   <build>
     <finalName>gestionrh_v0</finalName>
+      <plugins>
+          <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <configuration>
+                  <source>14</source>
+                  <target>14</target>
+              </configuration>
+          </plugin>
+      </plugins>
   </build>
 </project>

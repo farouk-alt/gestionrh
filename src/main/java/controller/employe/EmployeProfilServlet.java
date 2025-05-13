@@ -5,6 +5,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.Employe;
 import service.EmployeService;
+import util.PasswordUtil;
 
 import java.io.IOException;
 
@@ -51,21 +52,31 @@ public class EmployeProfilServlet extends HttpServlet {
         String prenom = request.getParameter("prenom");
         String nom = request.getParameter("nom");
         String email = request.getParameter("email");
-        String password = request.getParameter("password");
+        String motDePasse = request.getParameter("password");
 
         employe.setPrenom(prenom);
         employe.setNom(nom);
         employe.setEmail(email);
 
-        if (password != null && !password.trim().isEmpty()) {
-            employe.setMotDePasse(password); // Ajoutez un hachage ici si nécessaire
+        boolean motDePasseModifie = false;
+        if (motDePasse != null && !motDePasse.trim().isEmpty()) {
+            if (motDePasse.length() < 8) {
+                request.setAttribute("error", "🔐 Le mot de passe doit contenir au moins 8 caractères.");
+                request.setAttribute("employe", employe);
+                request.getRequestDispatcher("/views/employe/profil.jsp").forward(request, response);
+                return;
+            }
+            if (!motDePasse.equals(employe.getMotDePasse())) {
+                employe.setMotDePasse(PasswordUtil.hashPassword(motDePasse));
+                motDePasseModifie = true;
+            }
         }
 
-        employeService.updateEmploye(employe);
-        session.setAttribute("employe", employe); // Met à jour la session
-
-        session.setAttribute("profilUpdated", true);  // après update
+        employeService.updateEmploye(employe, motDePasseModifie);
+        session.setAttribute("employe", employe);
+        session.setAttribute("profilUpdated", true);
         response.sendRedirect(request.getContextPath() + "/employe/profil");
-
     }
+
+
 }

@@ -23,14 +23,15 @@ public class ExportCongePdfServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // 1. Récupérer l'employé connecté
         HttpSession session = request.getSession(false);
-        Integer employeId = (Integer) session.getAttribute("employeId");
+        Long employeId = (Long) session.getAttribute("employeId");
         if (employeId == null) {
             response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }
 
         // 2. Récupérer les congés de cet employé
-        List<DemandeConge> conges = congeService.getDemandesParEmploye(Long.valueOf(employeId));
+        List<DemandeConge> conges = congeService.getDemandesParEmploye(employeId);
+
 
         // 3. Configuration du PDF
         response.setContentType("application/pdf");

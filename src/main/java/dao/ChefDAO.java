@@ -198,39 +198,39 @@ public class ChefDAO {
                     .uniqueResult();
         }
     }
-
-    public void cloturerChefActuel(Long departementId) {
-        Transaction tx = null;
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            tx = session.beginTransaction();
-            Chef chef = getChefActuelByDepartementId(departementId);
-            if (chef != null) {
-                chef.setDateFin(new Date());
-                session.update(chef);
-            }
-            tx.commit();
-        } catch (Exception e) {
-            if (tx != null) tx.rollback();
-            e.printStackTrace();
-        }
-    }
-
-    public void reactiverAncienChef(Long chefId) {
-        Transaction tx = null;
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            tx = session.beginTransaction();
-            Chef chef = session.get(Chef.class, chefId);
-            if (chef != null) {
-                chef.setDateFin(null);
-                chef.setDateDebut(new Date());
-                session.update(chef);
-            }
-            tx.commit();
-        } catch (Exception e) {
-            if (tx != null) tx.rollback();
-            e.printStackTrace();
-        }
-    }
+//
+//    public void cloturerChefActuel(Long departementId) {
+//        Transaction tx = null;
+//        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+//            tx = session.beginTransaction();
+//            Chef chef = getChefActuelByDepartementId(departementId);
+//            if (chef != null) {
+//                chef.setDateFin(new Date());
+//                session.update(chef);
+//            }
+//            tx.commit();
+//        } catch (Exception e) {
+//            if (tx != null) tx.rollback();
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    public void reactiverAncienChef(Long chefId) {
+//        Transaction tx = null;
+//        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+//            tx = session.beginTransaction();
+//            Chef chef = session.get(Chef.class, chefId);
+//            if (chef != null) {
+//                chef.setDateFin(null);
+//                chef.setDateDebut(new Date());
+//                session.update(chef);
+//            }
+//            tx.commit();
+//        } catch (Exception e) {
+//            if (tx != null) tx.rollback();
+//            e.printStackTrace();
+//        }
+//    }
 
     public List<Chef> getAllChefs() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -279,15 +279,15 @@ public class ChefDAO {
         }
     }
 
-    public List<Chef> findChefsByEmployeId(Long employeId) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery(
-                            "from Chef where employe.id = :employeId",
-                            Chef.class)
-                    .setParameter("employeId", employeId)
-                    .list();
-        }
-    }
+//    public List<Chef> findChefsByEmployeId(Long employeId) {
+//        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+//            return session.createQuery(
+//                            "from Chef where employe.id = :employeId",
+//                            Chef.class)
+//                    .setParameter("employeId", employeId)
+//                    .list();
+//        }
+//    }
     public boolean isChefActuel(Long employeId) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         try {

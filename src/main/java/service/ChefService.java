@@ -222,62 +222,8 @@ public class ChefService {
     private final ChefDAO chefDAO = new ChefDAO();
     private final EmployeDAO employeDAO = new EmployeDAO();
     private final DepartementDAO departementDAO = new DepartementDAO();
+    private final NotificationService notifService = new NotificationService();
 
-//    public void nommerChef(Long employeId, Long departementId) {
-//        Session session = HibernateUtil.getSessionFactory().openSession();
-//        Transaction tx = null;
-//
-//        try {
-//            tx = session.beginTransaction();
-//
-//            // 🔒 Vérification : est-ce que cet employé est déjà chef ailleurs (actif) ?
-//            Chef autreChefActif = session.createQuery(
-//                            "FROM Chef WHERE employe.id = :empId AND dateFin IS NULL", Chef.class)
-//                    .setParameter("empId", employeId)
-//                    .uniqueResult();
-//
-//            if (autreChefActif != null) {
-//                throw new IllegalStateException("Cet employé est déjà chef d’un autre département.");
-//            }
-//
-//            // 🔎 Vérification : est-ce que l'employé appartient bien au département ?
-//            Employe employe = session.get(Employe.class, employeId);
-//            if (employe == null || employe.getDepartement() == null ||
-//                    !employe.getDepartement().getId().equals(departementId)) {
-//                throw new IllegalArgumentException("L'employé ne fait pas partie de ce département.");
-//            }
-//
-//            // ✅ Clôturer le chef actuel s’il existe pour ce département
-//            Chef chefActuel = session.createQuery(
-//                            "FROM Chef WHERE departement.id = :depId AND dateFin IS NULL", Chef.class)
-//                    .setParameter("depId", departementId)
-//                    .uniqueResult();
-//
-//            if (chefActuel != null) {
-//                chefActuel.setDateFin(java.sql.Date.valueOf(LocalDate.now()));
-//                session.update(chefActuel);
-//            }
-//
-//            // ✅ Nommer un nouveau chef
-//            Departement departement = session.get(Departement.class, departementId);
-//
-//            Chef nouveauChef = new Chef();
-//            nouveauChef.setEmploye(employe);
-//            nouveauChef.setDepartement(departement);
-//            nouveauChef.setDateDebut(java.sql.Date.valueOf(LocalDate.now()));
-//            nouveauChef.setDateFin(null);
-//
-//            session.persist(nouveauChef);
-//            tx.commit();
-//
-//        } catch (Exception e) {
-//            if (tx != null) tx.rollback();
-//            e.printStackTrace();
-//            throw new RuntimeException("Erreur lors de la nomination du chef : " + e.getMessage());
-//        } finally {
-//            session.close();
-//        }
-//    }
 
     public void nommerChef(Long employeId, Long departementId) {
         Session session = HibernateUtil.getSessionFactory().openSession();
@@ -316,6 +262,13 @@ public class ChefService {
             if (chefActuel != null) {
                 chefActuel.setDateFin(java.sql.Date.valueOf(LocalDate.now()));
                 session.update(chefActuel);
+
+                // 🔔 Notification pour l’ancien chef
+                notifService.creerNotification(
+                        chefActuel.getEmploye(),
+                        "⚠️ Vous avez été remplacé comme chef du département " + chefActuel.getDepartement().getNom(),
+                        "warning"
+                );
             }
 
             // ✅ Nommer un nouveau chef
@@ -328,6 +281,12 @@ public class ChefService {
             nouveauChef.setDateFin(null);
 
             session.persist(nouveauChef);
+            notifService.creerNotification(
+                    employe,
+                    "🎖️ Vous avez été nommé chef du département " + departement.getNom(),
+                    "success"
+            );
+
             tx.commit();
 
         } catch (Exception e) {
@@ -355,6 +314,12 @@ public class ChefService {
             if (chef != null) {
                 chef.setDateFin(java.sql.Date.valueOf(LocalDate.now()));
                 session.update(chef);
+                // 🔔 Notification pour l’ancien chef retiré
+                notifService.creerNotification(
+                        chef.getEmploye(),
+                        "⚠️ Vous avez été retiré de votre fonction de chef du département " + chef.getDepartement().getNom(),
+                        "danger"
+                );
             }
 
             tx.commit();

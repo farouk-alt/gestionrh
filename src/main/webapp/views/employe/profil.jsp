@@ -102,6 +102,18 @@
           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
         </div>
       </c:if>
+      <c:if test="${not empty error}">
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+          <div class="toast show align-items-center text-bg-danger border-0" role="alert">
+            <div class="d-flex">
+              <div class="toast-body">
+                  ${error}
+              </div>
+              <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+          </div>
+        </div>
+      </c:if>
 
       <h2 class="mb-4"><i class="bi bi-person-circle me-2"></i> Mon Profil</h2>
 

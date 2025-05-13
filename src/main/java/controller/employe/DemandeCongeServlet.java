@@ -353,6 +353,13 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
                 request.getRequestDispatcher("/views/employe/conges/formulaire.jsp").forward(request, response);
                 return;
             }
+            if (demandeCongeService.existeDemandeIdentiqueAcceptee(employeId, dateDebut, dateFin)) {
+                request.setAttribute("error", "❌ Vous avez déjà un congé approuvé pour ces mêmes dates.");
+                request.setAttribute("employe", employe);
+                request.getRequestDispatcher("/views/employe/conges/formulaire.jsp").forward(request, response);
+                return;
+            }
+
 
             boolean success = demandeCongeService.creerDemandeConge(employeId, dateDebut, dateFin, motif);
             if (success) {
@@ -430,6 +437,13 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
                     request.getRequestDispatcher("/views/employe/conges/modifier.jsp").forward(request, response);
                     return;
                 }
+                if (demandeCongeService.existeDemandeIdentiqueAcceptee(employeId, dateDebut, dateFin)) {
+                    request.setAttribute("error", "❌ Vous avez déjà un congé approuvé pour ces mêmes dates.");
+                    request.setAttribute("employe", employe);
+                    request.getRequestDispatcher("/views/employe/conges/modifier.jsp").forward(request, response);
+                    return;
+                }
+
 
                 // ✅ Appliquer la mise à jour de la demande
                 demande.setDateDebut(dateDebut);

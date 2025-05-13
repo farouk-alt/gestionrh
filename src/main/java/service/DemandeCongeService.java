@@ -65,7 +65,7 @@ public class DemandeCongeService {
 
         // ✅ Mise à jour seulement si solde suffisant
         employe.setSoldeConge(employe.getSoldeConge() - joursAAppliquer);
-        employeDAO.updateEmploye(employe);
+        employeDAO.updateEmploye(employe, false); // ✅ motDePasseModifie = false
 
         demande.setEtat(DemandeConge.EtatDemande.ACCEPTE);
         demande.setDateMiseAjour(new Date());
@@ -285,6 +285,24 @@ public class DemandeCongeService {
         }
     }
 
+    public boolean existeDemandeIdentiqueAcceptee(Long employeId, Date dateDebut, Date dateFin) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            String hql = "SELECT COUNT(d) FROM DemandeConge d " +
+                    "WHERE d.employe.id = :employeId " +
+                    "AND d.etat = :etat " +
+                    "AND d.dateDebut = :dateDebut " +
+                    "AND d.dateFin = :dateFin";
+
+            Long count = session.createQuery(hql, Long.class)
+                    .setParameter("employeId", employeId)
+                    .setParameter("etat", DemandeConge.EtatDemande.ACCEPTE)
+                    .setParameter("dateDebut", dateDebut)
+                    .setParameter("dateFin", dateFin)
+                    .uniqueResult();
+
+            return count != null && count > 0;
+        }
+    }
 
 
 }

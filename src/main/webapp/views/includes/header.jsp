@@ -1,5 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.lang != null ? sessionScope.lang : 'fr'}" />
+<fmt:setBundle basename="i18n.messages" />
+
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
 <header class="navbar navbar-expand-lg navbar-dark bg-dark shadow sticky-top">
@@ -8,7 +12,8 @@
         <!-- Logo -->
         <a class="navbar-brand d-flex align-items-center" href="${pageContext.request.contextPath}/">
             <i class="bi bi-building fs-4 me-2"></i>
-            <span class="fw-bold fs-5">Gestion RH</span>
+            <span class="fw-bold fs-5"><fmt:message key="app.title"/></span>
+
         </a>
 
         <!-- Mobile toggle button -->
@@ -35,6 +40,15 @@
 
                     </button>
                 </li>
+
+                <form method="get" action="${pageContext.request.contextPath}/change-lang" class="d-inline ms-3">
+                    <select name="lang" onchange="this.form.submit()" class="form-select form-select-sm" style="width: auto; display: inline-block;">
+                        <option value="fr" ${sessionScope.lang == 'fr' ? 'selected' : ''}>Français</option>
+                        <option value="en" ${sessionScope.lang == 'en' ? 'selected' : ''}>English</option>
+                        <option value="ar" ${sessionScope.lang == 'ar' ? 'selected' : ''}>العربية</option>
+                    </select>
+                </form>
+
 
                 <!-- Déconnexion -->
                 <li class="nav-item">

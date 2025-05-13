@@ -87,5 +87,18 @@ public class NotificationDAO {
             return null;
         }
     }
+    public void marquerToutCommeLues(Employe employe) {
+        Transaction tx = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            tx = session.beginTransaction();
+            session.createQuery("UPDATE Notification n SET n.lue = true WHERE n.destinataire = :emp")
+                    .setParameter("emp", employe)
+                    .executeUpdate();
+            tx.commit();
+        } catch (Exception e) {
+            if (tx != null) tx.rollback();
+            e.printStackTrace();
+        }
+    }
 
 }

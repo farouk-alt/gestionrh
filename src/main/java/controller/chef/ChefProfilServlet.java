@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Employe;
 import service.EmployeService;
+import util.PasswordUtil;
 
 import java.io.IOException;
 
@@ -39,23 +40,35 @@ public class ChefProfilServlet extends HttpServlet {
 
         Employe chef = (Employe) request.getSession().getAttribute("employe");
 
-        String nom = request.getParameter("nom").trim();
-        String prenom = request.getParameter("prenom").trim();
-        String email = request.getParameter("email").trim();
-        String motDePasse = request.getParameter("motDePasse").trim();
+        String nom = request.getParameter("nom");
+        String prenom = request.getParameter("prenom");
+        String email = request.getParameter("email");
+        String motDePasse = request.getParameter("motDePasse");
 
         chef.setNom(nom);
         chef.setPrenom(prenom);
         chef.setEmail(email);
-        if (!motDePasse.isEmpty()) {
-            chef.setMotDePasse(motDePasse); // hash si nécessaire
+
+        boolean motDePasseModifie = false;
+        if (motDePasse != null && !motDePasse.trim().isEmpty()) {
+            if (motDePasse.length() < 8) {
+                request.setAttribute("error", "🔐 Le mot de passe doit contenir au moins 8 caractères.");
+                request.setAttribute("profil", chef);
+                request.getRequestDispatcher("/views/chef/profile.jsp").forward(request, response);
+                return;
+            }
+            if (!motDePasse.equals(chef.getMotDePasse())) {
+                chef.setMotDePasse(PasswordUtil.hashPassword(motDePasse));
+                motDePasseModifie = true;
+            }
         }
 
-        employeService.updateEmploye(chef);
+        employeService.updateEmploye(chef, motDePasseModifie);
         request.getSession().setAttribute("employe", chef);
-
         request.setAttribute("profil", chef);
-        request.setAttribute("success", "Informations mises à jour avec succès.");
+        request.setAttribute("success", "✅ Informations mises à jour avec succès.");
         request.getRequestDispatcher("/views/chef/profile.jsp").forward(request, response);
     }
+
+
 }

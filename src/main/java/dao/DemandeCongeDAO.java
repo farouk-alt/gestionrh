@@ -247,24 +247,24 @@ public class DemandeCongeDAO {
             return Collections.emptyList();
         }
     }
-    public DemandeConge findByCritere(Date dateMaj, String nomEmp, String prenomEmp, String nomDepartement) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        try {
-            return session.createQuery(
-                            "SELECT d FROM DemandeConge d " +
-                                    "WHERE DATE(d.dateMiseAjour) = :dateMaj " +
-                                    "AND LOWER(d.employe.nom) = :nomEmp " +
-                                    "AND LOWER(d.employe.prenom) = :prenomEmp " +
-                                    "AND LOWER(d.employe.departement.nom) = :nomDepartement", DemandeConge.class)
-                    .setParameter("dateMaj", dateMaj)
-                    .setParameter("nomEmp", nomEmp.toLowerCase())
-                    .setParameter("prenomEmp", prenomEmp.toLowerCase())
-                    .setParameter("nomDepartement", nomDepartement.toLowerCase())
-                    .uniqueResult();
-        } finally {
-            session.close();
-        }
-    }
+//    public DemandeConge findByCritere(Date dateMaj, String nomEmp, String prenomEmp, String nomDepartement) {
+//        Session session = HibernateUtil.getSessionFactory().openSession();
+//        try {
+//            return session.createQuery(
+//                            "SELECT d FROM DemandeConge d " +
+//                                    "WHERE DATE(d.dateMiseAjour) = :dateMaj " +
+//                                    "AND LOWER(d.employe.nom) = :nomEmp " +
+//                                    "AND LOWER(d.employe.prenom) = :prenomEmp " +
+//                                    "AND LOWER(d.employe.departement.nom) = :nomDepartement", DemandeConge.class)
+//                    .setParameter("dateMaj", dateMaj)
+//                    .setParameter("nomEmp", nomEmp.toLowerCase())
+//                    .setParameter("prenomEmp", prenomEmp.toLowerCase())
+//                    .setParameter("nomDepartement", nomDepartement.toLowerCase())
+//                    .uniqueResult();
+//        } finally {
+//            session.close();
+//        }
+//    }
     public int countAllByDepartement(Long departementId) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         try {

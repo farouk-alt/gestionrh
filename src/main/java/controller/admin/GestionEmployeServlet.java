@@ -305,6 +305,7 @@ import model.Departement;
 import model.Employe;
 import service.DepartementService;
 import service.EmployeService;
+import util.PasswordUtil;
 
 //@WebServlet("/admin/employes/*")
 public class GestionEmployeServlet extends HttpServlet {
@@ -413,7 +414,32 @@ public class GestionEmployeServlet extends HttpServlet {
             employe.setPrenom(prenom);
             employe.setEmail(email);
             employe.setNomUtilisateur(nomUtilisateur);
-            employe.setMotDePasse(motDePasse);
+            if (motDePasse.length() < 8) {
+                request.setAttribute("error", "🔐 Le mot de passe doit contenir au moins 8 caractères.");
+
+                Employe employeForm = new Employe();
+                employeForm.setNom(nom);
+                employeForm.setPrenom(prenom);
+                employeForm.setEmail(email);
+                employeForm.setNomUtilisateur(nomUtilisateur);
+                employeForm.setAdmin(admin);
+
+                try {
+                    employeForm.setDateCreation(dateEmbauche); // ✅ réutilise dateEmbauche déjà parsée
+                    employeForm.setSoldeConge(soldeConge);     // ✅ idem
+                    Departement d = departementService.getDepartementById(departementId); // ✅ idem
+                    employeForm.setDepartement(d);
+                } catch (Exception ignored) {}
+
+                request.setAttribute("employe", employeForm);
+                request.setAttribute("departements", departementService.getAllDepartements());
+                request.getRequestDispatcher("/views/admin/employes/formulaire.jsp").forward(request, response);
+                return;
+            }
+
+
+            employe.setMotDePasse(PasswordUtil.hashPassword(motDePasse));
+
             employe.setDateCreation(dateEmbauche);
             employe.setSoldeConge(soldeConge);
             employe.setAdmin(admin);
@@ -456,28 +482,37 @@ public class GestionEmployeServlet extends HttpServlet {
             Long departementId = Long.parseLong(departementIdStr);
             boolean admin = "true".equalsIgnoreCase(adminStr);
 
+            boolean motDePasseModifie = false;
+            if (motDePasse != null && !motDePasse.trim().isEmpty()) {
+                if (motDePasse.length() < 8) {
+                    request.setAttribute("error", "🔐 Le mot de passe doit contenir au moins 8 caractères.");
+                    request.setAttribute("employe", employe);
+                    request.setAttribute("departements", departementService.getAllDepartements());
+                    request.getRequestDispatcher("/views/admin/employes/formulaire.jsp").forward(request, response);
+                    return;
+                }
+                employe.setMotDePasse(PasswordUtil.hashPassword(motDePasse));
+                motDePasseModifie = true;
+            }
+
             employe.setNom(nom);
             employe.setPrenom(prenom);
             employe.setEmail(email);
             employe.setNomUtilisateur(nomUtilisateur);
-            if (motDePasse != null && !motDePasse.isEmpty()) {
-                employe.setMotDePasse(motDePasse);
-            }
             employe.setDateCreation(dateEmbauche);
             employe.setSoldeConge(soldeConge);
             employe.setAdmin(admin);
+            employe.setDepartement(departementService.getDepartementById(departementId));
 
-            Departement departement = departementService.getDepartementById(departementId);
-            employe.setDepartement(departement);
-
-            employeService.updateEmploye(employe);
+            employeService.updateEmploye(employe, motDePasseModifie);
             response.sendRedirect(request.getContextPath() + "/admin/employes");
 
         } catch (ParseException | NumberFormatException e) {
-            request.setAttribute("error", "Format de données invalide");
+            request.setAttribute("error", "⚠️ Format invalide ou champ manquant.");
             request.setAttribute("employe", employe);
             request.setAttribute("departements", departementService.getAllDepartements());
             request.getRequestDispatcher("/views/admin/employes/formulaire.jsp").forward(request, response);
         }
     }
+
 }

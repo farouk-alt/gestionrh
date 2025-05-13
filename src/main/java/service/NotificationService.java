@@ -38,5 +38,7 @@ public class NotificationService {
         NotificationDAO dao = new NotificationDAO();
         dao.ajouterNotification(notif);
     }
-
+    public void marquerToutCommeLue(Employe employe) {
+        notificationDAO.marquerToutCommeLues(employe);
+    }
 }

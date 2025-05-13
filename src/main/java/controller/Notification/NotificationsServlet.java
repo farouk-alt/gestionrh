@@ -20,36 +20,64 @@ public class NotificationsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("employeId") == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+
+        Long employeId = (Long) session.getAttribute("employeId");
+        String role = (String) session.getAttribute("role");
+        Employe employe = employeService.getEmployeById(employeId);
+
+        // ✅ Si "Tout marquer comme lues"
+        if ("true".equals(request.getParameter("markAll"))) {
+            notificationService.marquerToutCommeLue(employe);
+            response.sendRedirect(request.getContextPath() + "/notifications");
+            return;
+        }
+
+        // ✅ Pagination
+        int page = 1;
+        int size = 5;
+        if (request.getParameter("page") != null) {
+            try {
+                page = Integer.parseInt(request.getParameter("page"));
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        List<Notification> all = notificationService.getAllNotifications(employe);
+        int totalPages = (int) Math.ceil((double) all.size() / size);
+        int from = (page - 1) * size;
+        int to = Math.min(from + size, all.size());
+        List<Notification> paged = all.subList(from, to);
+
+        request.setAttribute("notifications", paged);
+        request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("role", role);
+        request.setAttribute("employe", employe);
+        request.getRequestDispatcher("/views/notifications.jsp").forward(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
 
         if (session == null || session.getAttribute("employeId") == null) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
-        // ✅ Récupération des infos de session
         Long employeId = (Long) session.getAttribute("employeId");
-        String role = (String) session.getAttribute("role");
-
-        // ✅ Employé connecté
         Employe employe = employeService.getEmployeById(employeId);
 
-        // ✅ Notifications pour cet employé
-        List<Notification> notifications = notificationService.getAllNotifications(employe);
-
-        // ✅ Transmission aux JSP
-        request.setAttribute("employe", employe); // pour l'affichage
-        request.setAttribute("notifications", notifications);
-        request.setAttribute("role", role);       // pour inclure la bonne sidebar
-
-        // ✅ Redirection vers la page JSP
-        request.getRequestDispatcher("/views/notifications.jsp").forward(request, response);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String idStr = request.getParameter("id");
+        String markAll = request.getParameter("markAll");
 
-        if (idStr != null) {
+        if ("true".equals(markAll)) {
+            // ✅ Marquer toutes les notifications comme lues
+            notificationService.marquerToutCommeLue(employe);
+        } else if (idStr != null) {
             try {
                 Long id = Long.parseLong(idStr);
                 notificationService.marquerCommeLue(id);
@@ -58,7 +86,6 @@ public class NotificationsServlet extends HttpServlet {
             }
         }
 
-        // ✅ Recharge la page après l'action
         response.sendRedirect(request.getContextPath() + "/notifications");
     }
 }

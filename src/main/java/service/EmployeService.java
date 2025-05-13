@@ -107,9 +107,10 @@ public class EmployeService {
         employeDAO.saveEmploye(employe);
     }
 
-    public void updateEmploye(Employe employe) {
-        employeDAO.updateEmploye(employe);
+    public void updateEmploye(Employe employe, boolean motDePasseModifie) {
+        employeDAO.updateEmploye(employe, motDePasseModifie);
     }
+
 
     public boolean deleteEmploye(Long id) {
         Employe employe = employeDAO.getEmployeById(id);
@@ -143,13 +144,6 @@ public class EmployeService {
         return findByEmail(email) != null;
     }
 
-    public void updateQuotaConge(Long employeId, int nouveauQuota) {
-        Employe employe = getEmployeById(employeId);
-        if (employe != null) {
-            employe.setSoldeConge(nouveauQuota);
-            updateEmploye(employe);
-        }
-    }
 
     public Employe authenticate(String email, String password) {
         return employeDAO.authenticate(email, password);

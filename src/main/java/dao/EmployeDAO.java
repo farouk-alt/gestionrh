@@ -137,6 +137,7 @@ import org.hibernate.Transaction;
 
 import service.NotificationService;
 import util.HibernateUtil;
+import util.PasswordUtil;
 
 import java.util.List;
 
@@ -171,19 +172,34 @@ public class EmployeDAO {
         }
     }
 
-
-
-    public void updateEmploye(Employe employe) {
+    public void updateEmploye(Employe employe, boolean motDePasseModifie) {
         Transaction tx = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             tx = session.beginTransaction();
             session.update(employe);
-            tx.commit();
+            tx.commit(); // ✅ commit d'abord, puis envoie des notifs
         } catch (Exception e) {
             if (tx != null) tx.rollback();
             e.printStackTrace();
+            return;
+        }
+
+        // ✅ Appels en dehors de la session Hibernate
+        notifService.creerNotification(
+                employe,
+                "✏️ Vos informations personnelles ont été mises à jour.",
+                "info"
+        );
+
+        if (motDePasseModifie) {
+            notifService.creerNotification(
+                    employe,
+                    "🔐 Votre mot de passe a été modifié par l’administrateur.",
+                    "warning"
+            );
         }
     }
+
 
     public void deleteEmploye(Long id) {
         Transaction tx = null;
@@ -244,16 +260,30 @@ public class EmployeDAO {
 
     public Employe authenticate(String email, String password) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery(
-                            "from Employe where email = :email and motDePasse = :password", Employe.class)
+            Employe employe = session.createQuery(
+                            "from Employe where email = :email", Employe.class)
                     .setParameter("email", email)
-                    .setParameter("password", password)
                     .uniqueResult();
+
+            // ✅ Exception temporaire pour le super admin en clair
+            if (employe != null && "admin@gmail.com".equalsIgnoreCase(email)
+                    && "1234".equals(password)) {
+                return employe; // ⚠️ uniquement temporaire
+            }
+
+            // ✅ Vérification classique avec BCrypt
+            if (employe != null && PasswordUtil.checkPassword(password, employe.getMotDePasse())) {
+                return employe;
+            }
+
+            return null;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
+
+
     public List<Employe> findByDepartementId(Long departementId) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         try {
