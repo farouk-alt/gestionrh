@@ -1,11 +1,14 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.lang}" />
+<fmt:setBundle basename="i18n.messages" />
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Historique des chefs</title>
+    <title><fmt:message key="page.chef.history.title" /></title>
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Styles -->
@@ -54,7 +57,7 @@
 
         <!-- ✅ Mode sombre ciblé ici -->
         <main id="mainContent" class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
-            <h2 class="mb-4">🕓 Historique des chefs – ${departement.nom}</h2>
+            <h2 class="mb-4"><h2 class="mb-4">🕓 <fmt:message key="page.chef.history.title" /> – ${departement.nom}</h2>
 
             <c:choose>
                 <c:when test="${not empty departement.anciensChefs}">
@@ -63,14 +66,14 @@
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 👤 <strong>${chef.employe.nomComplet}</strong>
                                 <span>
-                                    nommé le <strong><fmt:formatDate value="${chef.dateDebut}" pattern="yyyy-MM-dd" /></strong>
+                                    <fmt:message key="label.appointedOn" /> <strong><fmt:formatDate value="${chef.dateDebut}" pattern="yyyy-MM-dd" /></strong>
                                     →
                                     <c:choose>
                                         <c:when test="${chef.dateFin != null}">
-                                            jusqu’au <strong><fmt:formatDate value="${chef.dateFin}" pattern="yyyy-MM-dd" /></strong>
+                                            <fmt:message key="label.until" /> <strong><fmt:formatDate value="${chef.dateFin}" pattern="yyyy-MM-dd" /></strong>
                                         </c:when>
                                         <c:otherwise>
-                                            <strong class="text-success">(en fonction)</strong>
+                                            <strong class="text-success">(<fmt:message key="label.inFunction" />)</strong>
                                         </c:otherwise>
                                     </c:choose>
                                 </span>
@@ -79,12 +82,13 @@
                     </ul>
                 </c:when>
                 <c:otherwise>
-                    <p class="text-muted">Aucun chef trouvé pour ce département.</p>
-                </c:otherwise>
+                <p class="text-muted"><fmt:message key="label.no.chefs.found" /></p>
+
+            </c:otherwise>
             </c:choose>
 
             <a href="${pageContext.request.contextPath}/admin/departements" class="btn btn-secondary mt-3">
-                ⬅ Retour
+                ⬅ <fmt:message key="button.back" />
             </a>
         </main>
     </div>

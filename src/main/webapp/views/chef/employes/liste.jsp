@@ -1,6 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.lang}" />
+<fmt:setBundle basename="i18n.messages" />
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -109,13 +111,13 @@
 
 <div id="mainContent" class="main-content animate__animated animate__fadeIn">
     <h2 class="mb-4">
-        👥 Liste des employés – Département <strong class="text-primary">${nomDepartement}</strong>
+        <fmt:message key="chef.employes.titre"/> <strong class="text-primary">${nomDepartement}</strong>
     </h2>
 
     <div class="header-actions no-print">
-        <input type="text" id="searchInput" class="form-control" placeholder="🔍 Rechercher un employé...">
+        <input type="text" id="searchInput" class="form-control" placeholder="<fmt:message key="chef.employes.rechercher"/>">
         <button onclick="window.print()" class="btn btn-outline-danger">
-            <i class="bi bi-file-earmark-pdf-fill me-1"></i> Exporter PDF
+            <i class="bi bi-file-earmark-pdf-fill me-1"></i> <fmt:message key="chef.employes.export"/>
         </button>
     </div>
 
@@ -126,10 +128,10 @@
                     <thead>
                     <tr>
                         <th>#</th>
-                        <th>Nom complet</th>
-                        <th>Email</th>
-                        <th>Rôle</th>
-                        <th>Date d'embauche</th>
+                        <th><fmt:message key="chef.employes.colonne.nom"/></th>
+                        <th><fmt:message key="chef.employes.colonne.email"/></th>
+                        <th><fmt:message key="chef.employes.colonne.role"/></th>
+                        <th><fmt:message key="chef.employes.colonne.date"/></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -141,10 +143,10 @@
                             <td>
                                 <c:choose>
                                     <c:when test="${emp.estChefActuel}">
-                                        <span class="badge bg-success text-uppercase">Chef</span>
+                                        <span class="badge bg-success text-uppercase"><fmt:message key="chef.employes.role.chef"/></span>
                                     </c:when>
                                     <c:otherwise>
-                                        <span class="badge bg-info text-uppercase">Employé</span>
+                                        <span class="badge bg-info text-uppercase"><fmt:message key="chef.employes.role.employe"/></span>
                                     </c:otherwise>
                                 </c:choose>
                             </td>
@@ -157,7 +159,7 @@
         </c:when>
         <c:otherwise>
             <div class="alert alert-info shadow-sm">
-                Aucun employé trouvé dans ce département.
+                <fmt:message key="chef.employes.vide"/>
             </div>
         </c:otherwise>
     </c:choose>
@@ -181,14 +183,14 @@
     $(document).ready(function () {
         $('#empsTable').DataTable({
             "language": {
-                "search": "🔎 Recherche :",
-                "lengthMenu": "Afficher _MENU_ entrées",
-                "info": "Affichage de _START_ à _END_ sur _TOTAL_ entrées",
+                "search": "<fmt:message key="chef.employes.datatable.recherche"/>",
+                "lengthMenu": "<fmt:message key="chef.employes.datatable.afficher"/>",
+                "info": "<fmt:message key="chef.employes.datatable.info"/>",
                 "paginate": {
-                    "first": "Premier",
-                    "last": "Dernier",
-                    "next": "Suivant",
-                    "previous": "Précédent"
+                    "first": "<fmt:message key="chef.employes.datatable.paginer.premier"/>",
+                    "last": "<fmt:message key="chef.employes.datatable.paginer.dernier"/>",
+                    "next": "<fmt:message key="chef.employes.datatable.paginer.suivant"/>",
+                    "previous": "<fmt:message key="chef.employes.datatable.paginer.precedent"/>"
                 }
             }
         });

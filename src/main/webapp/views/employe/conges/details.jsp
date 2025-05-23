@@ -1,6 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.lang}" />
+<fmt:setBundle basename="i18n.messages" />
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -58,32 +60,32 @@
     <main id="mainContent" class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 animate__animated animate__fadeIn">
       <div class="card shadow-lg border-0">
         <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
-          <h5 class="mb-0">📄 Détails de la demande</h5>
+          <h5 class="mb-0"><fmt:message key="demande.titre"/></h5>
           <i class="bi bi-file-earmark-text"></i>
         </div>
         <div class="card-body">
           <ul class="list-group list-group-flush">
-            <li class="list-group-item"><strong>👤 Employé :</strong> ${demande.employe.nomComplet}</li>
-            <li class="list-group-item"><strong>📅 Début :</strong> <fmt:formatDate value="${demande.dateDebut}" pattern="dd/MM/yyyy"/></li>
-            <li class="list-group-item"><strong>📅 Fin :</strong> <fmt:formatDate value="${demande.dateFin}" pattern="dd/MM/yyyy"/></li>
-            <li class="list-group-item"><strong>📝 Motif :</strong> ${demande.motif}</li>
-            <li class="list-group-item"><strong>📌 État :</strong>
+            <li class="list-group-item"><strong><fmt:message key="demande.employe"/></strong> ${demande.employe.nomComplet}</li>
+            <li class="list-group-item"><strong><fmt:message key="demande.debut"/></strong> <fmt:formatDate value="${demande.dateDebut}" pattern="dd/MM/yyyy"/></li>
+            <li class="list-group-item"><strong><fmt:message key="demande.fin"/></strong> <fmt:formatDate value="${demande.dateFin}" pattern="dd/MM/yyyy"/></li>
+            <li class="list-group-item"><strong><fmt:message key="demande.details.motif"/></strong> ${demande.motif}</li>
+            <li class="list-group-item"><strong><fmt:message key="demande.etat"/></strong>
               <c:choose>
                 <c:when test="${demande.etat.name() == 'ACCEPTE'}">
-                  <span class="badge bg-success">Acceptée</span>
+                  <span class="badge bg-success"><fmt:message key="demande.etat.accepte"/></span>
                 </c:when>
                 <c:when test="${demande.etat.name() == 'REFUSE'}">
-                  <span class="badge bg-danger">Refusée</span>
+                  <span class="badge bg-danger"><fmt:message key="demande.etat.refuse"/></span>
                 </c:when>
                 <c:otherwise>
-                  <span class="badge bg-warning text-dark">En attente</span>
+                  <span class="badge bg-warning text-dark"><fmt:message key="demande.etat.en_attente"/></span>
                 </c:otherwise>
               </c:choose>
             </li>
           </ul>
 
           <a href="${pageContext.request.contextPath}/employe/mes-conges" class="btn btn-outline-secondary mt-4">
-            <i class="bi bi-arrow-left-circle"></i> Retour à la liste
+            <i class="bi bi-arrow-left-circle"></i> <fmt:message key="demande.retour"/>
           </a>
         </div>
       </div>

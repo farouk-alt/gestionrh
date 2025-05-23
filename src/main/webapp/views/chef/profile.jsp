@@ -1,5 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.lang}" />
+<fmt:setBundle basename="i18n.messages" />
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -70,7 +73,7 @@
 
 
     <main id="mainContent" class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 animate__animated animate__fadeIn">
-      <h2 class="mb-4">👤 Mon Profil</h2>
+      <h2 class="mb-4"><fmt:message key="profile.titre"/></h2>
 
       <c:if test="${not empty success}">
         <div class="alert alert-success animate__animated animate__fadeInDown">
@@ -92,23 +95,23 @@
 
       <form method="post" action="${pageContext.request.contextPath}/chef/profil" class="shadow-sm p-4 rounded bg-light">
         <div class="mb-3">
-          <label class="form-label">Nom</label>
+          <label class="form-label"><fmt:message key="profile.nom"/></label>
           <input type="text" name="nom" class="form-control" value="${profil.nom}" required>
         </div>
         <div class="mb-3">
-          <label class="form-label">Prénom</label>
+          <label class="form-label"><fmt:message key="profile.prenom"/></label>
           <input type="text" name="prenom" class="form-control" value="${profil.prenom}" required>
         </div>
         <div class="mb-3">
-          <label class="form-label">Email</label>
+          <label class="form-label"><fmt:message key="profile.email"/></label>
           <input type="email" name="email" class="form-control" value="${profil.email}" required>
         </div>
         <div class="mb-3">
-          <label class="form-label">Mot de passe <small class="text-muted">(laisser vide pour ne pas changer)</small></label>
+          <label class="form-label"><fmt:message key="profile.motdepasse"/> <small class="text-muted"><fmt:message key="profile.motdepasse.info"/></small></label>
           <input type="password" name="motDePasse" class="form-control">
         </div>
         <button type="submit" class="btn btn-primary">
-          <i class="bi bi-save me-1"></i> Mettre à jour
+          <i class="bi bi-save me-1"></i> <fmt:message key="profile.mettreajour"/>
         </button>
       </form>
     </main>

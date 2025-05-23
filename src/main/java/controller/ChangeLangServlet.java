@@ -14,7 +14,7 @@ public class ChangeLangServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String lang = request.getParameter("lang");
         HttpSession session = request.getSession();
-        if (lang != null && (lang.equals("fr") || lang.equals("en") || lang.equals("ar"))) {
+        if (lang != null && (lang.equals("fr") || lang.equals("en"))) {
             session.setAttribute("lang", lang);
         }
         String referer = request.getHeader("referer");

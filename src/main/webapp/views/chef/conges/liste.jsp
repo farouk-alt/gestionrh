@@ -1,6 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.lang}" />
+<fmt:setBundle basename="i18n.messages" />
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -69,11 +71,11 @@
                 <jsp:include page="../../includes/chef-sidebar.jsp" />
 
         <main id="mainContent" class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 animate__animated animate__fadeIn">
-            <h2 class="mb-4">📋 Demandes de congé en attente</h2>
+            <h2 class="mb-4"><fmt:message key="chef.titre.demandes_attente"/></h2>
 
             <c:if test="${empty demandes}">
                 <div class="alert alert-info">
-                    Il n'y a aucune demande en attente actuellement.
+                    <fmt:message key="chef.aucune_demande"/>
                 </div>
             </c:if>
 
@@ -82,11 +84,11 @@
                     <table id="congesList" class="table table-hover table-bordered align-middle">
                         <thead class="table-light">
                         <tr>
-                            <th>Employé</th>
-                            <th>Date début</th>
-                            <th>Date fin</th>
-                            <th>Motif</th>
-                            <th>Actions</th>
+                            <th><fmt:message key="chef.table.employe"/></th>
+                            <th><fmt:message key="chef.table.date_debut"/></th>
+                            <th><fmt:message key="chef.table.date_fin"/></th>
+                            <th><fmt:message key="chef.table.motif"/></th>
+                            <th><fmt:message key="chef.table.actions"/></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -98,7 +100,7 @@
                                 <td>${d.motif}</td>
                                 <td>
                                     <a href="${pageContext.request.contextPath}/chef/conges/traiter/${d.id}" class="btn btn-success btn-sm me-2">
-                                        <i class="bi bi-check-circle"></i> Traiter
+                                        <i class="bi bi-check-circle"></i> </i> <fmt:message key="chef.bouton.traiter"/>
                                     </a>
                                 </td>
                             </tr>
@@ -110,7 +112,7 @@
 
             <div class="mt-4">
                 <a href="${pageContext.request.contextPath}/chef/conges/historique" class="btn btn-outline-secondary">
-                    <i class="bi bi-clock-history"></i> Voir l'historique des demandes traitées
+                    <i class="bi bi-clock-history"></i> </i> <fmt:message key="chef.bouton.historique"/>
                 </a>
             </div>
         </main>

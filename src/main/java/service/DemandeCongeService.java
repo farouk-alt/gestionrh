@@ -64,6 +64,7 @@ public class DemandeCongeService {
         }
 
         // ✅ Mise à jour seulement si solde suffisant
+
         employe.setSoldeConge(employe.getSoldeConge() - joursAAppliquer);
         employeDAO.updateEmploye(employe, false); // ✅ motDePasseModifie = false
 

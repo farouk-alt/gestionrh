@@ -1,12 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.lang}" />
+<fmt:setBundle basename="i18n.messages" />
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liste des départements - Gestion RH</title>
+    <title><fmt:message key="page.department.list.title" /></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
@@ -36,9 +38,10 @@
 
         <main id="mainContent" class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">Gestion des départements</h1>
+                <h1 class="h2"><fmt:message key="page.department.list.title" /></h1>
                 <a href="${pageContext.request.contextPath}/admin/departements/ajouter" class="btn btn-primary">
-                    <i class="bi bi-plus-circle me-1"></i> Nouveau département
+                    <i class="bi bi-plus-circle me-1"></i><fmt:message key="button.new.department" />
+
                 </a>
             </div>
 
@@ -67,16 +70,17 @@
                         <table id="depsTable" class="table table-hover table-striped table-sm">
                             <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Nom</th>
-                                <th>Chef</th>
-                                <th class="text-end">Actions</th>
+                                <th><fmt:message key="column.id" /></th>
+                                <th><fmt:message key="column.name" /></th>
+                                <th><fmt:message key="column.head" /></th>
+                                <th class="text-end"><fmt:message key="column.actions" /></th>
+
                             </tr>
                             </thead>
                             <tbody>
                             <c:choose>
                                 <c:when test="${empty departements}">
-                                    <tr><td colspan="5" class="text-center">Aucun département trouvé</td></tr>
+                                    <tr><td colspan="5" class="text-center"><fmt:message key="label.no.departments" /></td></tr>
                                 </c:when>
                                 <c:otherwise>
                                     <c:forEach var="dep" items="${departements}">
@@ -93,7 +97,7 @@
                                                         ${dep.chef.employe.nomComplet}
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <span class="text-muted">Non assigné</span>
+                                                        <span class="text-muted"><fmt:message key="label.not.assigned" /></span>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </td>
@@ -105,11 +109,11 @@
                                                     <a href="${pageContext.request.contextPath}/admin/departements/chef/${dep.id}" class="btn btn-outline-success" title="Gérer le chef">
                                                         <i class="bi bi-person"></i>
                                                     </a>
-                                                    <a href="${pageContext.request.contextPath}/admin/departements/supprimer/${dep.id}" class="btn btn-outline-danger" onclick="return confirm('Supprimer ce département ?')">
+                                                    <a href="${pageContext.request.contextPath}/admin/departements/supprimer/${dep.id}" class="btn btn-outline-danger" onclick="return confirm('<fmt:message key="confirm.delete.department" />')">
                                                         <i class="bi bi-trash"></i>
                                                     </a>
                                                     <a href="${pageContext.request.contextPath}/admin/departements/historique/${dep.id}" class="btn btn-info">
-                                                        🕓 Voir historique des chefs
+                                                        🕓 <fmt:message key="button.history" />
                                                     </a>
 
                                                 </div>
@@ -159,14 +163,14 @@
     $(document).ready(function () {
         $('#depsTable').DataTable({
             "language": {
-                "search": "🔎 Recherche :",
-                "lengthMenu": "Afficher _MENU_ entrées",
-                "info": "Affichage de _START_ à _END_ sur _TOTAL_ entrées",
+                "search": "<fmt:message key='datatable.search' />",
+                "lengthMenu": "<fmt:message key='datatable.lengthMenu' />",
+                "info": "<fmt:message key='datatable.info' />",
                 "paginate": {
-                    "first": "Premier",
-                    "last": "Dernier",
-                    "next": "Suivant",
-                    "previous": "Précédent"
+                    "first": "<fmt:message key='datatable.paginate.first' />",
+                    "last": "<fmt:message key='datatable.paginate.last' />",
+                    "next": "<fmt:message key='datatable.paginate.next' />",
+                    "previous": "<fmt:message key='datatable.paginate.previous' />"
                 }
             }
         });

@@ -1,6 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.lang}" />
+<fmt:setBundle basename="i18n.messages" />
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -73,14 +75,14 @@
     <div class="row">
                 <jsp:include page="../includes/chef-sidebar.jsp" />
         <main id="mainContent" class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
-            <h2 class="mb-4">📊 Tableau de bord - Chef de Département</h2>
+            <h2 class="mb-4"><fmt:message key="chef.dashboard.titre"/></h2>
 
             <!-- Statistiques -->
             <div class="row g-4">
                 <div class="col-md-3 animate__animated animate__fadeInUp">
                     <div class="card text-white bg-primary shadow-sm">
                         <div class="card-body">
-                            <h5 class="card-title">Total des demandes</h5>
+                            <h5 class="card-title"><fmt:message key="chef.dashboard.total"/></h5>
                             <p class="card-text fs-4">${total}</p>
                         </div>
                     </div>
@@ -88,7 +90,7 @@
                 <div class="col-md-3 animate__animated animate__fadeInUp animate__delay-1s">
                     <div class="card text-white bg-success shadow-sm">
                         <div class="card-body">
-                            <h5 class="card-title">Demandes acceptées</h5>
+                            <h5 class="card-title"><fmt:message key="chef.dashboard.acceptees"/></h5>
                             <p class="card-text fs-4">${acceptees}</p>
                         </div>
                     </div>
@@ -96,7 +98,7 @@
                 <div class="col-md-3 animate__animated animate__fadeInUp animate__delay-2s">
                     <div class="card text-white bg-danger shadow-sm">
                         <div class="card-body">
-                            <h5 class="card-title">Demandes refusées</h5>
+                            <h5 class="card-title"><fmt:message key="chef.dashboard.refusees"/></h5>
                             <p class="card-text fs-4">${refusees}</p>
                         </div>
                     </div>
@@ -104,7 +106,7 @@
                 <div class="col-md-3 animate__animated animate__fadeInUp animate__delay-3s">
                     <div class="card text-white bg-warning shadow-sm">
                         <div class="card-body">
-                            <h5 class="card-title">En attente</h5>
+                            <h5 class="card-title"><fmt:message key="chef.dashboard.attente"/></h5>
                             <p class="card-text fs-4">${enAttente}</p>
                         </div>
                     </div>
@@ -115,7 +117,7 @@
             <c:choose>
                 <c:when test="${total == 0}">
                     <div class="alert alert-info mt-4">
-                        Il n'y a actuellement aucune demande de congé à afficher dans le graphique.
+                        <fmt:message key="chef.dashboard.alert.aucune"/>
                     </div>
                 </c:when>
                 <c:otherwise>
@@ -123,7 +125,7 @@
                         <div class="col-lg-8">
                             <div class="card shadow-sm">
                                 <div class="card-body">
-                                    <h5 class="card-title">État des demandes de congé</h5>
+                                    <h5 class="card-title"><fmt:message key="chef.dashboard.chart.title"/></h5>
                                     <canvas id="etatChart" height="100"></canvas>
                                 </div>
                             </div>
@@ -138,7 +140,7 @@
                             data: {
                                 labels: ['Acceptées', 'Refusées', 'En attente'],
                                 datasets: [{
-                                    label: 'Nombre de demandes',
+                                    label: '<fmt:message key="chef.dashboard.chart.label"/>',
                                     data: [${acceptees}, ${refusees}, ${enAttente}],
                                     backgroundColor: ['#198754', '#dc3545', '#ffc107'],
                                     borderColor: ['#198754', '#dc3545', '#ffc107'],

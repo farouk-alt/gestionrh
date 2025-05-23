@@ -1,5 +1,11 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%
+    // ✅ Forcer la langue par défaut en français si non définie
+    if (session.getAttribute("lang") == null) {
+        session.setAttribute("lang", "fr");
+    }
+%>
 <!DOCTYPE html>
 <html lang="fr">
 <head>

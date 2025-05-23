@@ -1,5 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isErrorPage="true" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.lang}" />
+<fmt:setBundle basename="i18n.messages" />
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -20,15 +23,15 @@
                         <i class="bi bi-exclamation-triangle-fill text-warning" style="font-size: 5rem;"></i>
                     </div>
                     <h1 class="display-1 fw-bold text-danger">404</h1>
-                    <h2 class="mb-3">Page non trouvée</h2>
-                    <p class="mb-4 text-muted">La page que vous recherchez n'existe pas ou a été déplacée.</p>
+                    <h2 class="mb-3"><fmt:message key="error.notFoundTitle" /></h2>
+                    <p class="mb-4 text-muted"><fmt:message key="error.notFoundDescription" /></p>
 
                     <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
                         <a href="${pageContext.request.contextPath}/" class="btn btn-primary btn-lg px-4 gap-3">
-                            <i class="bi bi-house-door-fill me-2"></i>Retour à l'accueil
+                            <i class="bi bi-house-door-fill me-2"></i><fmt:message key="error.home" />
                         </a>
                         <button onclick="window.history.back()" class="btn btn-outline-secondary btn-lg px-4">
-                            <i class="bi bi-arrow-left me-2"></i>Page précédente
+                            <i class="bi bi-arrow-left me-2"></i><fmt:message key="error.back" />
                         </button>
                     </div>
                 </div>

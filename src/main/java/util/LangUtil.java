@@ -17,7 +17,6 @@ public class LangUtil {
 
         Locale locale = switch (lang) {
             case "en" -> Locale.ENGLISH;
-            case "ar" -> new Locale("ar");
             default -> Locale.FRENCH;
         };
 

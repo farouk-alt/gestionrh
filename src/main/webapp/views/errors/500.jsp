@@ -1,5 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isErrorPage="true" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.lang != null ? sessionScope.lang : 'fr'}"/>
+<fmt:setBundle basename="i18n.messages"/>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -20,20 +23,20 @@
                         <i class="bi bi-x-octagon-fill text-danger" style="font-size: 5rem;"></i>
                     </div>
                     <h1 class="display-1 fw-bold text-danger">500</h1>
-                    <h2 class="mb-3">Erreur interne du serveur</h2>
-                    <p class="mb-4 text-muted">Une erreur s'est produite lors du traitement de votre demande. Nos équipes techniques ont été informées du problème.</p>
+                    <h2 class="mb-3"><fmt:message key="error.internalTitle" /></h2>
+                    <p class="mb-4 text-muted"><fmt:message key="error.internalDescription" /></p>
 
                     <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
                         <a href="${pageContext.request.contextPath}/" class="btn btn-primary btn-lg px-4 gap-3">
-                            <i class="bi bi-house-door-fill me-2"></i>Retour à l'accueil
+                            <i class="bi bi-house-door-fill me-2"></i><fmt:message key="error.home" />
                         </a>
                         <button onclick="window.history.back()" class="btn btn-outline-secondary btn-lg px-4">
-                            <i class="bi bi-arrow-left me-2"></i>Page précédente
+                            <i class="bi bi-arrow-left me-2"></i><fmt:message key="error.back" />
                         </button>
                     </div>
 
                     <div class="mt-4 pt-3 border-top">
-                        <p class="small text-muted mb-0">Si le problème persiste, veuillez contacter l'administrateur système.</p>
+                        <p class="small text-muted mb-0"><fmt:message key="error.contact" /></p>
                         <p class="small text-muted">
                             <i class="bi bi-envelope me-1"></i> support@gestionrh.com
                         </p>

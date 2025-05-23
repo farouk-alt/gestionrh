@@ -1,10 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.lang}" />
+<fmt:setBundle basename="i18n.messages" />
+
 
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Mon Profil</title>
+  <title><fmt:message key="profil.title" /></title>
+
 
   <!-- CSS & Animations -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -98,7 +103,7 @@
     <main id="mainContent" class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 animate__animated animate__fadeIn">
       <c:if test="${profilUpdated}">
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-          ✅ Vos informations ont bien été mises à jour.
+          ✅ <fmt:message key="profil.updateSuccess" />
           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
         </div>
       </c:if>
@@ -115,16 +120,16 @@
         </div>
       </c:if>
 
-      <h2 class="mb-4"><i class="bi bi-person-circle me-2"></i> Mon Profil</h2>
+      <h2 class="mb-4"><i class="bi bi-person-circle me-2"></i> <fmt:message key="profil.title" /></h2>
 
       <form method="post" action="${pageContext.request.contextPath}/employe/profil">
         <div class="row mb-3">
           <div class="col-md-6">
-            <label class="form-label">Prénom</label>
+            <label class="form-label"><fmt:message key="profil.firstname" /></label>
             <input type="text" class="form-control" name="prenom" value="${employe.prenom}" required>
           </div>
           <div class="col-md-6">
-            <label class="form-label">Nom</label>
+            <fmt:message key="profil.lastname" />
             <input type="text" class="form-control" name="nom" value="${employe.nom}" required>
           </div>
         </div>
@@ -135,16 +140,17 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Mot de passe</label>
-          <input type="password" class="form-control" name="password" placeholder="Laisser vide pour ne pas changer">
+          <fmt:message key="profil.password" />
+          <input type="password" class="form-control" name="password" placeholder="<fmt:message key="profil.passwordPlaceholder"/>">
         </div>
         <div class="mb-3">
-          <label class="form-label">Solde de congé (jours)</label>
+<%--          <label class="form-label">Solde de congé (jours)</label>--%>
+          <fmt:message key="profil.soldeConge" />
           <input type="number" class="form-control" value="${employe.soldeConge}" disabled>
         </div>
 
         <button type="submit" class="btn btn-primary">
-          <i class="bi bi-save me-1"></i> Enregistrer les modifications
+          <i class="bi bi-save me-1"></i> <fmt:message key="profil.saveChanges" />
         </button>
       </form>
     </main>

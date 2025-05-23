@@ -1,10 +1,14 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.lang}" />
+<fmt:setBundle basename="i18n.messages" />
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Créer un Département</title>
+    <title><fmt:message key="${empty departement.id ? 'page.department.create.title' : 'page.department.edit.title'}" /></title>
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
@@ -47,7 +51,7 @@
         <jsp:include page="../../includes/admin-sidebar.jsp" />
 
         <main id="mainContent" class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
-            <h2 class="mb-4">Ajouter un nouveau département</h2>
+            <h2 class="mb-4"> <fmt:message key="${empty departement.id ? 'page.department.create.title' : 'page.department.edit.title'}" /></h2>
 
             <c:if test="${not empty error}">
                 <div class="alert alert-danger">${error}</div>
@@ -55,13 +59,13 @@
 
             <form action="${pageContext.request.contextPath}/admin/departements${empty departement.id ? '/ajouter' : '/editer/'.concat(departement.id)}" method="post">
                 <div class="mb-3">
-                    <label for="nom" class="form-label">Nom du département <span class="text-danger">*</span></label>
+                    <label for="nom" class="form-label"><fmt:message key="label.department.name" /> <span class="text-danger">*</span></label>
                     <input type="text" id="nom" name="nom" class="form-control" value="${departement.nom}" required>
                 </div>
 
                 <div class="text-end">
-                    <a href="${pageContext.request.contextPath}/admin/departements" class="btn btn-secondary">Annuler</a>
-                    <button type="submit" class="btn btn-primary">${empty departement.id ? 'Créer' : 'Enregistrer'}</button>
+                    <a href="${pageContext.request.contextPath}/admin/departements" class="btn btn-secondary"><fmt:message key="button.cancel" /></a>
+                    <button type="submit" class="btn btn-primary"><fmt:message key="${empty departement.id ? 'button.create' : 'button.save'}" /></button>
                 </div>
             </form>
         </main>

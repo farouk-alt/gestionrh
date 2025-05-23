@@ -1,6 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.lang}" />
+<fmt:setBundle basename="i18n.messages" />
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -63,11 +65,12 @@
                 <jsp:include page="../../includes/chef-sidebar.jsp" />
 
         <main id="mainContent" class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 animate__animated animate__fadeIn">
-            <h2 class="mb-4">📚 Historique des demandes traitées</h2>
+            <h2 class="mb-4"><fmt:message key="chef.historique.titre"/></h2>
 
             <c:if test="${empty demandesTraitees}">
                 <div class="alert alert-info">
-                    Aucune demande traitée n'est disponible pour le moment.
+                    <fmt:message key="chef.historique.aucune"/>
+
                 </div>
             </c:if>
 
@@ -76,12 +79,12 @@
                     <table class="table table-striped table-hover">
                         <thead class="table-light">
                         <tr>
-                            <th>Employé</th>
-                            <th>Date début</th>
-                            <th>Date fin</th>
-                            <th>Motif</th>
-                            <th>État</th>
-                            <th>Dernière mise à jour</th>
+                            <th><fmt:message key="chef.historique.employe"/></th>
+                            <th><fmt:message key="chef.historique.date_debut"/></th>
+                            <th><fmt:message key="chef.historique.date_fin"/></th>
+                            <th><fmt:message key="chef.historique.motif"/></th>
+                            <th><fmt:message key="chef.historique.etat"/></th>
+                            <th><fmt:message key="chef.historique.mise_a_jour"/></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -94,13 +97,13 @@
                                 <td>
                                     <c:choose>
                                         <c:when test="${d.etat == 'ACCEPTE'}">
-                                            <span class="badge bg-success">Acceptée</span>
+                                            <span class="badge bg-success"><fmt:message key="chef.historique.acceptee"/></span>
                                         </c:when>
                                         <c:when test="${d.etat == 'REFUSE'}">
-                                            <span class="badge bg-danger">Refusée</span>
+                                            <span class="badge bg-danger"><fmt:message key="chef.historique.refusee"/></span>
                                         </c:when>
                                         <c:otherwise>
-                                            <span class="badge bg-secondary">Inconnue</span>
+                                            <span class="badge bg-secondary"><fmt:message key="chef.historique.inconnue"/></span>
                                         </c:otherwise>
                                     </c:choose>
                                 </td>

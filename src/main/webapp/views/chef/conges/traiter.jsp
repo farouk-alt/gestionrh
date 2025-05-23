@@ -1,6 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.lang}" />
+<fmt:setBundle basename="i18n.messages" />
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -57,39 +59,40 @@
         <jsp:include page="../../includes/chef-sidebar.jsp"/>
 
         <main id="mainContent" class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 animate__animated animate__fadeIn">
-            <h2 class="mb-4 text-primary">📝 Traiter la Demande de Congé</h2>
+            <h2 class="mb-4 text-primary">📝 <fmt:message key="chef.titre.traiter_demande"/></h2>
 
             <c:if test="${progressionAcceptation >= 50}">
                 <div class="alert alert-danger animate__animated animate__fadeInDown" role="alert">
-                    ⚠️ Vous avez atteint la limite de <strong>50%</strong> d'employés en congé accepté dans ce département.
+                    <fmt:message key="chef.alert.limite_50"/>
                 </div>
             </c:if>
 
             <c:if test="${not empty erreur}">
                 <div class="alert alert-warning animate__animated animate__fadeInDown">
-                        ${erreur}
+<%--                        ${erreur}--%>
+                    <fmt:message key="chef.erreur.demande" />
                 </div>
             </c:if>
 
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <h5 class="card-title mb-3">Informations de la demande</h5>
+                    <h5 class="card-title mb-3"><fmt:message key="chef.info.demande"/></h5>
                     <ul class="list-group mb-4">
-                        <li class="list-group-item"><strong>Employé :</strong> ${demande.employe.nomComplet}</li>
-                        <li class="list-group-item"><strong>Début :</strong> <fmt:formatDate value="${demande.dateDebut}" pattern="dd/MM/yyyy"/></li>
-                        <li class="list-group-item"><strong>Fin :</strong> <fmt:formatDate value="${demande.dateFin}" pattern="dd/MM/yyyy"/></li>
-                        <li class="list-group-item"><strong>Motif :</strong> ${demande.motif}</li>
+                        <li class="list-group-item"><strong><fmt:message key="chef.demande.employe"/></strong> ${demande.employe.nomComplet}</li>
+                        <li class="list-group-item"><strong><fmt:message key="chef.demande.debut"/></strong> <fmt:formatDate value="${demande.dateDebut}" pattern="dd/MM/yyyy"/></li>
+                        <li class="list-group-item"><strong><fmt:message key="chef.demande.fin"/></strong> <fmt:formatDate value="${demande.dateFin}" pattern="dd/MM/yyyy"/></li>
+                        <li class="list-group-item"><strong><fmt:message key="chef.demande.motif"/></strong> ${demande.motif}</li>
                     </ul>
                     <c:if test="${not empty nbEmployesConge && not empty nbTotalEmployes}">
                         <p class="text-muted mt-2">
-                            Employés en congé approuvé : <strong>${nbEmployesConge} / ${nbTotalEmployes}</strong>
+                            <fmt:message key="chef.demande.statistique"/> <strong>${nbEmployesConge} / ${nbTotalEmployes}</strong>
                         </p>
                     </c:if>
 
                     <c:if test="${progressionAcceptation != null}">
                         <div class="mb-4">
                             <label class="form-label">
-                                Taux d’approbation actuel du département : <strong>${progressionAcceptation}%</strong>
+                                <fmt:message key="chef.taux.approbation"/><strong>${progressionAcceptation}%</strong>
                             </label>
                             <div class="d-flex align-items-center gap-3">
                                 <div class="flex-grow-1">
@@ -112,23 +115,22 @@
                         <div class="d-flex justify-content-between mt-4">
                             <button name="action" value="approuver" class="btn btn-success"
                                     <c:if test="${progressionAcceptation >= 50}">disabled</c:if>>
-                                <i class="bi bi-check-circle me-1"></i> Approuver
+                                <i class="bi bi-check-circle me-1"></i> <fmt:message key="chef.bouton.approuver"/>
                             </button>
 
                             <button name="action" value="refuser" class="btn btn-danger">
-                                <i class="bi bi-x-circle me-1"></i> Refuser
+                                <i class="bi bi-x-circle me-1"></i> <fmt:message key="chef.bouton.refuser"/>
                             </button>
 
                             <a href="${pageContext.request.contextPath}/chef/conges" class="btn btn-secondary">
-                                <i class="bi bi-arrow-left me-1"></i> Retour
+                                <i class="bi bi-arrow-left me-1"></i> <fmt:message key="chef.bouton.retour"/>
                             </a>
                         </div>
                     </form>
 
                     <c:if test="${progressionAcceptation >= 50}">
                         <div class="text-danger mt-3">
-                            ❌ Le bouton <strong>“Approuver”</strong> est désactivé car plus de 50% des demandes
-                            ont déjà été acceptées dans ce département.
+                            <fmt:message key="chef.desactivation.bouton"/>
                         </div>
                     </c:if>
                 </div>

@@ -1,11 +1,13 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.lang}" />
+<fmt:setBundle basename="i18n.messages" />
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Recherche Avancée - Historique Congés</title>
+  <title><fmt:message key="page.advanced.leave.search.title" /></title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
   <style>
@@ -52,42 +54,42 @@
     <jsp:include page="../../includes/admin-sidebar.jsp" />
 
     <main id="mainContent" class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
-      <h2>🔍 Recherche avancée - Historique des demandes de congé</h2>
+      <h2>🔍 <fmt:message key="page.advanced.leave.search.title" /></h2>
 
       <form action="${pageContext.request.contextPath}/admin/conges/recherche" method="get" class="row g-3">
         <div class="col-md-4">
-          <label for="nomEmploye" class="form-label">Nom employé</label>
+          <label for="nomEmploye" class="form-label"><fmt:message key="label.employee.name" /></label>
           <input type="text" id="nomEmploye" name="nomEmploye" class="form-control">
         </div>
 
         <div class="col-md-4">
-          <label for="nomDepartement" class="form-label">Nom département</label>
+          <label for="nomDepartement" class="form-label"><fmt:message key="label.department.name" /></label>
           <input type="text" id="nomDepartement" name="nomDepartement" class="form-control">
         </div>
 
         <div class="col-md-4">
-          <label for="dateMiseAJour" class="form-label">Date de mise à jour</label>
+          <label for="dateMiseAJour" class="form-label"><fmt:message key="label.updated.date" /></label>
           <input type="date" id="dateMiseAJour" name="dateMiseAJour" class="form-control">
         </div>
 
         <div class="col-12 text-end">
           <button type="submit" class="btn btn-primary">
-            <i class="bi bi-search"></i> Rechercher
+            <i class="bi bi-search"></i> <fmt:message key="button.search" />
           </button>
         </div>
       </form>
 
       <c:if test="${not empty resultats}">
-        <h3 class="mt-4">Résultats</h3>
+        <h3 class="mt-4"><fmt:message key="label.results" /></h3>
         <table class="table table-bordered">
           <thead>
           <tr>
-            <th>Nom employé</th>
-            <th>Début</th>
-            <th>Fin</th>
-            <th>Motif</th>
-            <th>État</th>
-            <th>Chef de département</th>
+            <th><fmt:message key="column.employee.name" /></th>
+            <th><fmt:message key="column.start.date" /></th>
+            <th><fmt:message key="column.end.date" /></th>
+            <th><fmt:message key="column.reason" /></th>
+            <th><fmt:message key="column.status" /></th>
+            <th><fmt:message key="column.department.head" /></th>
           </tr>
           </thead>
           <tbody>
@@ -112,7 +114,7 @@
       </c:if>
 
       <c:if test="${empty resultats and not empty param.nomEmploye}">
-        <div class="alert alert-warning mt-4">Aucun résultat trouvé pour les critères spécifiés.</div>
+        <div class="alert alert-warning mt-4"><fmt:message key="label.no.results" /></div>
       </c:if>
     </main>
   </div>

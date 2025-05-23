@@ -1,11 +1,13 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.lang}" />
+<fmt:setBundle basename="i18n.messages" />
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Détails du département</title>
+  <title><fmt:message key="page.department.details.title" /></title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
@@ -55,13 +57,13 @@
 
       <main id="mainContent" class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h2 class="h4">Détails du département : <strong>${departement.nom}</strong></h2>
+        <h2 class="h4"><fmt:message key="page.department.details.title" /> : <strong>${departement.nom}</strong></h2>
       </div>
 
       <div class="card mb-4">
         <div class="card-body">
 
-          <h5 class="mt-4">Chef de département</h5>
+          <h5 class="mt-4"><fmt:message key="label.department.head" /></h5>
           <c:choose>
             <c:when test="${not empty departement.anciensChefs}">
 <%--              <p>--%>
@@ -76,11 +78,11 @@
 
             </c:when>
             <c:otherwise>
-              <p class="text-muted">Aucun chef assigné.</p>
+              <p class="text-muted"><fmt:message key="label.no.head" /></p>
             </c:otherwise>
           </c:choose>
 
-          <h5 class="mt-4">Liste des employés</h5>
+          <h5 class="mt-4"><fmt:message key="label.employees.list" /></h5>
           <c:choose>
             <c:when test="${not empty departement.employes}">
               <ul class="list-group list-group-flush">
@@ -92,14 +94,14 @@
               </ul>
             </c:when>
             <c:otherwise>
-              <p class="text-muted">Aucun employé dans ce département.</p>
+              <p class="text-muted"><fmt:message key="label.no.employees" /></p>
             </c:otherwise>
           </c:choose>
         </div>
       </div>
 
       <a href="${pageContext.request.contextPath}/admin/departements" class="btn btn-secondary">
-        <i class="bi bi-arrow-left"></i> Retour à la liste
+        <i class="bi bi-arrow-left"></i> <fmt:message key="button.back" />
       </a>
     </main>
   </div>

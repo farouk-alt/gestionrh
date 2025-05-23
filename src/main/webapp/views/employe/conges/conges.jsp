@@ -1,6 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.lang}" />
+<fmt:setBundle basename="i18n.messages" />
 
 
 <!DOCTYPE html>
@@ -85,33 +87,33 @@
 
 
 <main id="mainContent" class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 animate__animated animate__fadeIn">
-    <h2 class="mb-4">📅 Mes demandes de congé</h2>
+    <h2 class="mb-4">📅 <fmt:message key="leaveRequests.title"/></h2>
 
     <a href="${pageContext.request.contextPath}/employe/conges/demander" class="btn btn-success mb-3">
-        <i class="bi bi-plus-circle"></i> Nouvelle demande
+        <i class="bi bi-plus-circle"></i> <fmt:message key="leaveRequests.newRequest" />
     </a>
 
     <c:choose>
         <c:when test="${not empty conges}">
             <div class="table-responsive">
                 <a href="${pageContext.request.contextPath}/export/pdf" class="btn btn-outline-danger float-end mb-3">
-                    <i class="bi bi-file-earmark-pdf"></i> Exporter PDF
+                    <i class="bi bi-file-earmark-pdf"></i>  <fmt:message key="leaveRequests.exportPdf"/>
                 </a>
 
                 <!-- 2. Champ de filtre JS -->
-                <input type="text" id="filtreTable" class="form-control mb-3" placeholder="🔎 Filtrer les demandes...">
+                <input type="text" id="filtreTable" class="form-control mb-3" placeholder="🔎 <fmt:message key='leaveRequests.filterPlaceholder'/>">
 
                 <table  id="congesTable" class="table table-hover shadow-sm">
                     <thead class="table-light">
                     <tr>
                         <th>#</th>
-                        <th>Date début</th>
-                        <th>Date fin</th>
-                        <th>Motif</th>
-                        <th>État</th>
-                        <th>Date maj</th>
-                        <th>Traité par</th>
-                        <th>Actions</th>
+                        <th><fmt:message key="leaveRequests.startDate"/></th>
+                        <th><fmt:message key="leaveRequests.endDate"/></th>
+                        <th><fmt:message key="leaveRequests.reason"/></th>
+                        <th><fmt:message key="leaveRequests.status"/></th>
+                        <th><fmt:message key="leaveRequests.updatedAt"/></th>
+                        <th><fmt:message key="leaveRequests.processedBy"/></th>
+                        <th><fmt:message key="leaveRequests.actions"/></th>
 
                     </tr>
                     </thead>
@@ -128,13 +130,13 @@
                             <td>
                                 <c:choose>
                                     <c:when test="${conge.etat == 'EN_ATTENTE'}">
-                                        <span class="badge text-bg-warning">En attente</span>
+                                        <span class="badge text-bg-warning"><fmt:message key="leaveRequests.pending"/></span>
                                     </c:when>
                                     <c:when test="${conge.etat == 'ACCEPTE'}">
-                                        <span class="badge text-bg-success">Acceptée</span>
+                                        <span class="badge text-bg-success"><fmt:message key="leaveRequests.accepted"/></span>
                                     </c:when>
                                     <c:otherwise>
-                                        <span class="badge text-bg-danger">Refusée</span>
+                                        <span class="badge text-bg-danger"><fmt:message key="leaveRequests.refused"/></span>
                                     </c:otherwise>
                                 </c:choose>
                             </td>
@@ -156,17 +158,17 @@
                                     <!-- Icône Modifier -->
                                     <a href="${pageContext.request.contextPath}/employe/conges/modifier/${conge.id}"
                                        class="btn btn-sm btn-outline-warning me-1"
-                                       title="Modifier">
+                                       title="<fmt:message key='leaveRequests.edit'/>">
                                         <i class="bi bi-pencil-square"></i>
                                     </a>
 
                                     <!-- Icône Supprimer -->
                                     <form action="${pageContext.request.contextPath}/employe/conges/supprimer/${conge.id}"
                                           method="post" style="display:inline;"
-                                          onsubmit="return confirm('Confirmer la suppression ?');">
+                                          onsubmit="return confirm('<fmt:message key='leaveRequests.confirmDelete'/>');">
                                         <button type="submit"
                                                 class="btn btn-sm btn-outline-danger"
-                                                title="Supprimer">
+                                                title="<fmt:message key='leaveRequests.delete'/>">
                                             <i class="bi bi-trash3"></i>
                                         </button>
                                     </form>
@@ -175,7 +177,7 @@
                                 <!-- Icône Voir -->
                                 <a href="${pageContext.request.contextPath}/employe/conges/voir/${conge.id}"
                                    class="btn btn-sm btn-outline-primary"
-                                   title="Voir les détails">
+                                   title="<fmt:message key='leaveRequests.view'/>">
                                     <i class="bi bi-eye"></i>
                                 </a>
                             </td>
@@ -213,14 +215,14 @@
     $(document).ready(function () {
         $('#congesTable').DataTable({
             "language": {
-                "search": "🔎 Recherche :",
-                "lengthMenu": "Afficher _MENU_ entrées",
-                "info": "Affichage de _START_ à _END_ sur _TOTAL_ entrées",
+                "search": "🔎 <fmt:message key='datatable.search'/>",
+                "lengthMenu": "<fmt:message key='datatable.lengthMenu'/>",
+                "info": "<fmt:message key='datatable.info'/>",
                 "paginate": {
-                    "first": "Premier",
-                    "last": "Dernier",
-                    "next": "Suivant",
-                    "previous": "Précédent"
+                    "first": "<fmt:message key='datatable.first'/>",
+                    "last": "<fmt:message key='datatable.last'/>",
+                    "next": "<fmt:message key='datatable.next'/>",
+                    "previous": "<fmt:message key='datatable.previous'/>"
                 }
             }
         });

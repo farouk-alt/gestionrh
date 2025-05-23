@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.lang}" />
+<fmt:setBundle basename="i18n.messages" />
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -67,7 +69,7 @@
         <!-- ✅ ID ajouté ici -->
         <main id="mainContent" class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">Tableau de bord</h1>
+                <h1 class="h2"><fmt:message key="admin.dashboard.title"/></h1>
             </div>
 
             <!-- ✅ Statistiques des employés et départements -->
@@ -77,7 +79,7 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
-                                    <h6 class="card-title text-white">Employés</h6>
+                                    <h6 class="card-title text-white"><fmt:message key="admin.dashboard.employes"/></h6>
                                     <h2 class="display-4 mt-2 mb-0">${employes.size()}</h2>
                                 </div>
                                 <i class="bi bi-people-fill fs-1"></i>
@@ -94,14 +96,14 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
-                                    <h6 class="card-title text-white">Départements</h6>
+                                    <h6 class="card-title text-white"><fmt:message key="admin.dashboard.departements"/></h6>
                                     <h2 class="display-4 mt-2 mb-0">${departements.size()}</h2>
                                 </div>
                                 <i class="bi bi-building fs-1"></i>
                             </div>
                         </div>
                         <div class="card-footer">
-                            <a href="${pageContext.request.contextPath}/admin/departements" class="text-white">Voir détails <i class="bi bi-chevron-right"></i></a>
+                            <a href="${pageContext.request.contextPath}/admin/departements" class="text-white"><fmt:message key="admin.dashboard.voir_details"/> <i class="bi bi-chevron-right"></i></a>
                         </div>
                     </div>
                 </div>
@@ -112,16 +114,16 @@
                 <div class="col-lg-6 mb-4">
                     <div class="card shadow-sm animate__animated animate__fadeInUp animate__delay-2s">
                         <div class="card-header bg-white">
-                            <h5 class="card-title mb-0">Derniers employés ajoutés</h5>
+                            <h5 class="card-title mb-0"><fmt:message key="admin.dashboard.latest_employes"/></h5>
                         </div>
                         <div class="card-body">
                             <table class="table table-hover">
                                 <thead>
                                 <tr>
-                                    <th>Nom</th>
-                                    <th>Email</th>
-                                    <th>Département</th>
-                                    <th>Date</th>
+                                    <th><fmt:message key="admin.dashboard.latest_employes.nom"/></th>
+                                    <th><fmt:message key="admin.dashboard.latest_employes.email"/></th>
+                                    <th><fmt:message key="admin.dashboard.latest_employes.departement"/></th>
+                                    <th><fmt:message key="admin.dashboard.latest_employes.date"/></th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -143,15 +145,15 @@
                 <div class="col-lg-6 mb-4">
                     <div class="card shadow-sm animate__animated animate__fadeInUp animate__delay-3s">
                         <div class="card-header bg-white">
-                            <h5 class="card-title mb-0">Départements</h5>
+                            <h5 class="card-title mb-0"><fmt:message key="admin.dashboard.departements_table"/></h5>
                         </div>
                         <div class="card-body">
                             <table class="table table-hover">
                                 <thead>
                                 <tr>
-                                    <th>Nom</th>
-                                    <th>Chef</th>
-                                    <th>Nb employés</th>
+                                    <th><fmt:message key="admin.dashboard.departements.nom"/></th>
+                                    <th><fmt:message key="admin.dashboard.departements.chef"/></th>
+                                    <th><fmt:message key="admin.dashboard.departements.nb_employes"/></th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -164,7 +166,7 @@
                                                     ${departement.chef.employe.nomComplet}
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <span class="text-muted">Non assigné</span>
+                                                    <span class="text-muted"><fmt:message key="admin.dashboard.departements.chef_non_assigne"/></span>
                                                 </c:otherwise>
                                             </c:choose>
                                         </td>
@@ -182,13 +184,13 @@
             <c:if test="${employe.estChefActuel}">
                 <div class="card mt-4 shadow-sm border border-success">
                     <div class="card-body">
-                        <h5 class="card-title text-success">🧑‍💼 Espace Chef de Département</h5>
-                        <p>Vous êtes également chef de département. Accédez à vos outils :</p>
+                        <h5 class="card-title text-success"><fmt:message key="admin.dashboard.espace_chef.title"/></h5>
+                        <p><fmt:message key="admin.dashboard.espace_chef.text"/></p>
                         <a href="${pageContext.request.contextPath}/chef/dashboard" class="btn btn-outline-success me-2">
-                            <i class="bi bi-diagram-3"></i> Dashboard Chef
+                            <i class="bi bi-diagram-3"></i> <fmt:message key="admin.dashboard.espace_chef.dashboard"/>
                         </a>
                         <a href="${pageContext.request.contextPath}/chef/profil" class="btn btn-outline-success">
-                            <i class="bi bi-person-circle"></i> Mon Profil Chef
+                            <i class="bi bi-person-circle"></i> <fmt:message key="admin.dashboard.espace_chef.profil"/>
                         </a>
                     </div>
                 </div>

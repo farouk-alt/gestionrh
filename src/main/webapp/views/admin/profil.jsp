@@ -1,5 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.lang}" />
+<fmt:setBundle basename="i18n.messages" />
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -63,31 +66,31 @@
 
         <!-- ✅ Mode sombre appliqué ici uniquement -->
         <main id="mainContent" class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
-            <h2>Mon Profil</h2>
+            <h2><fmt:message key="admin.profile.title"/></h2>
 
             <c:if test="${not empty success}">
-                <div class="alert alert-success">${success}</div>
+                <div class="alert alert-success"><fmt:message key="admin.profile.success"/></div>
             </c:if>
 
             <form method="post" action="${pageContext.request.contextPath}/admin/profil">
                 <div class="mb-3">
-                    <label class="form-label">Nom</label>
+                    <label class="form-label"><fmt:message key="admin.profile.label.nom"/></label>
                     <input type="text" name="nom" class="form-control" value="${admin.nom}" required>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Prénom</label>
+                    <label class="form-label"><fmt:message key="admin.profile.label.prenom"/></label>
                     <input type="text" name="prenom" class="form-control" value="${admin.prenom}" required>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Email</label>
+                    <label class="form-label"><fmt:message key="admin.profile.label.email"/></label>
                     <input type="email" name="email" class="form-control" value="${admin.email}" required>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Mot de passe (laisser vide pour ne pas modifier)</label>
+                    <label class="form-label"><fmt:message key="admin.profile.label.password"/></label>
                     <input type="password" name="motDePasse" class="form-control">
                 </div>
                 <div class="text-end">
-                    <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                    <button type="submit" class="btn btn-primary"><fmt:message key="admin.profile.button.update"/></button>
                 </div>
             </form>
         </main>

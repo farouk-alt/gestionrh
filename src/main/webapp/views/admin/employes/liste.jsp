@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.lang}" />
+<fmt:setBundle basename="i18n.messages" />
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="fr">
@@ -50,9 +52,9 @@
 
         <main id="mainContent" class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">Gestion des employés</h1>
+                <h1 class="h2"><fmt:message key="admin.employes.title" /></h1>
                 <a href="${pageContext.request.contextPath}/admin/employes/ajouter" class="btn btn-primary">
-                    <i class="bi bi-plus-circle me-1"></i> Nouvel employé
+                    <i class="bi bi-plus-circle me-1"></i> <fmt:message key="admin.employes.btn.add" />
                 </a>
             </div>
 
@@ -76,10 +78,10 @@
                 <div class="card-header bg-white">
                     <div class="row align-items-center">
                         <div class="col">
-                            <h5 class="card-title mb-0">Liste des employés</h5>
+                            <h5 class="card-title mb-0"><fmt:message key="admin.employes.table.title" /></h5>
                         </div>
                         <div class="col-auto">
-                            <input type="text" id="tableFilter" class="form-control form-control-sm" placeholder="Rechercher...">
+                            <input type="text" id="tableFilter" class="form-control form-control-sm" placeholder="<fmt:message key="admin.employes.table.search" />">
                         </div>
                     </div>
                 </div>
@@ -88,21 +90,22 @@
                         <table id="employeTable" class="table table-hover table-striped table-sm table-filterable table-sortable">
                             <thead>
                             <tr>
-                                <th data-sort="id">ID</th>
-                                <th data-sort="nom">Nom</th>
-                                <th data-sort="email">Email</th>
-                                <th data-sort="departement">Département</th>
-                                <th data-sort="role">Rôle</th>
-                                <th data-sort="dateEmbauche">Date d'embauche</th>
-                                <th data-sort="quotaConge">solde congé</th>
-                                <th class="text-end">Actions</th>
+                                <th data-sort="id"><fmt:message key="admin.employes.col.id" /></th>
+                                <th data-sort="nom"><fmt:message key="admin.employes.col.nom" /></th>
+                                <th data-sort="email"><fmt:message key="admin.employes.col.email" /></th>
+                                <th data-sort="departement"><fmt:message key="admin.employes.col.departement" /></th>
+                                <th data-sort="role"><fmt:message key="admin.employes.col.role" /></th>
+                                <th data-sort="dateEmbauche"><fmt:message key="admin.employes.col.dateEmbauche" /></th>
+                                <th data-sort="quotaConge"><fmt:message key="admin.employes.col.quotaConge" /></th>
+                                <th class="text-end"><fmt:message key="admin.employes.col.actions" /></th>
                             </tr>
                             </thead>
                             <tbody>
                             <c:choose>
                                 <c:when test="${empty employes}">
                                     <tr>
-                                        <td colspan="9" class="text-center">Aucun employé trouvé</td>
+                                        <td colspan="9" class="text-center"><fmt:message key="admin.employes.empty" />
+                                        </td>
                                     </tr>
                                 </c:when>
                                 <c:otherwise>
@@ -117,30 +120,30 @@
                                                         ${employe.departement.nom}
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <span class="text-muted">Non assigné</span>
+                                                        <span class="text-muted"><fmt:message key="admin.employes.role.non_assigne" /></span>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </td>
                                             <td>
                                                 <c:if test="${employe.admin}">
-                                                    <span class="badge bg-danger me-1">Administrateur</span>
+                                                    <span class="badge bg-danger me-1"><fmt:message key="admin.employes.role.admin" /></span>
                                                 </c:if>
                                                 <c:if test="${employe.estChefActuel}">
-                                                    <span class="badge bg-success">Chef</span>
+                                                    <span class="badge bg-success"><fmt:message key="admin.employes.role.chef" /></span>
                                                 </c:if>
                                                 <c:if test="${not employe.admin and not employe.estChefActuel}">
-                                                    <span class="badge bg-primary">Employé</span>
+                                                    <span class="badge bg-primary"><fmt:message key="admin.employes.role.employe" /></span>
                                                 </c:if>
                                             </td>
                                             <td><fmt:formatDate value="${employe.dateCreation}" pattern="dd/MM/yyyy" /></td>
-                                            <td>${employe.soldeConge} jours</td>
+                                            <td>${employe.soldeConge} <fmt:message key="admin.employes.role.employe.solde" /></td>
                                             <td class="text-end">
                                                 <div class="btn-group btn-group-sm">
-                                                    <a href="${pageContext.request.contextPath}/admin/employes/editer/${employe.id}" class="btn btn-outline-primary" title="Modifier">
+                                                    <a href="${pageContext.request.contextPath}/admin/employes/editer/${employe.id}" class="btn btn-outline-primary" title="<fmt:message key="admin.employes.btn.edit" />">
                                                         <i class="bi bi-pencil"></i>
                                                     </a>
-                                                    <a href="${pageContext.request.contextPath}/admin/employes/supprimer/${employe.id}" class="btn btn-outline-danger btn-delete" title="Supprimer"
-                                                       onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet employé ?');">
+                                                    <a href="${pageContext.request.contextPath}/admin/employes/supprimer/${employe.id}" class="btn btn-outline-danger btn-delete" title="<fmt:message key="admin.employes.btn.delete" />"
+                                                       onclick="return confirm('<fmt:message key="admin.employes.delete.confirm" />');">
                                                         <i class="bi bi-trash"></i>
                                                     </a>
                                                 </div>

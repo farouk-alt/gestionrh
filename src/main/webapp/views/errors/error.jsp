@@ -1,5 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isErrorPage="true" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="${sessionScope.lang != null ? sessionScope.lang : 'fr'}"/>
+<fmt:setBundle basename="i18n.messages"/>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -19,30 +23,30 @@
           <div class="error-icon mb-4">
             <i class="bi bi-exclamation-circle-fill text-danger" style="font-size: 5rem;"></i>
           </div>
-          <h1 class="mb-3">Une erreur est survenue</h1>
-          <p class="mb-4 text-muted">Nous sommes désolés, mais une erreur s'est produite lors du traitement de votre demande.</p>
+          <h1 class="mb-3"><fmt:message key="error.title" /></h1>
+          <p class="mb-4 text-muted"><fmt:message key="error.description" /></p>
 
           <c:if test="${pageContext.errorData.statusCode != null}">
             <div class="alert alert-danger">
-              <p><strong>Code d'erreur:</strong> ${pageContext.errorData.statusCode}</p>
+              <p><strong><fmt:message key="error.code" />:</strong> ${pageContext.errorData.statusCode}</p>
               <c:if test="${pageContext.exception != null}">
-                <p><strong>Type d'erreur:</strong> ${pageContext.exception.getClass().getName()}</p>
-                <p><strong>Message:</strong> ${pageContext.exception.message}</p>
+                <p><strong><fmt:message key="error.type" />:</strong> ${pageContext.exception.getClass().getName()}</p>
+                <p><strong>M<fmt:message key="error.message" />:</strong> ${pageContext.exception.message}</p>
               </c:if>
             </div>
           </c:if>
 
           <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
             <a href="${pageContext.request.contextPath}/" class="btn btn-primary btn-lg px-4 gap-3">
-              <i class="bi bi-house-door-fill me-2"></i>Retour à l'accueil
+              <i class="bi bi-house-door-fill me-2"></i><fmt:message key="error.home" />
             </a>
             <button onclick="window.history.back()" class="btn btn-outline-secondary btn-lg px-4">
-              <i class="bi bi-arrow-left me-2"></i>Page précédente
+              <i class="bi bi-arrow-left me-2"></i><fmt:message key="error.back" />
             </button>
           </div>
 
           <div class="mt-4 pt-3 border-top">
-            <p class="small text-muted mb-0">Si le problème persiste, veuillez contacter l'administrateur système.</p>
+            <p class="small text-muted mb-0"><fmt:message key="error.contact" /></p>
             <p class="small text-muted">
               <i class="bi bi-envelope me-1"></i> support@gestionrh.com
             </p>
